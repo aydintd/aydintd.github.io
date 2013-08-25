@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Nginx-mysql-php5 cgi-supervisor Kurulumu - Teknik, Kişisel, Ivır Zıvır Blog</title>
+  <meta name="author" content="Aydın Doyak">
+
+  
+  <meta name="description" content="php denemeleri yapabileceğimiz nginx web sunucusu için gereken ortamı sırasıyla kuralım : Kurulum İçerikleri mysql Kurulumu nginx Kurulumu ve &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://aydintd.github.io/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Teknik, Kişisel, Ivır Zıvır Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37492706-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Teknik, Kişisel, Ivır Zıvır Blog</a></h1>
+  
+    <h2>aydintd@eagle:~$ echo 'Hello World!'</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:aydintd.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Nginx-mysql-php5 Cgi-supervisor Kurulumu</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-14T01:44:00+02:00" pubdate data-updated="true">Jan 14<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>  php denemeleri yapabileceğimiz nginx web sunucusu için <br/>
+  gereken ortamı sırasıyla kuralım :</p>
+
+<h3>Kurulum İçerikleri</h3>
+
+<ul>
+<li> mysql Kurulumu</li>
+<li> nginx Kurulumu ve Konfigürasyonu</li>
+<li> php5-cgi Kurulumu</li>
+<li> supervisor Kurulumu</li>
+</ul>
+
+
+<h4>Mysql Kurulumu</h4>
+
+<p>  Paketi aşağıdaki şekilde kuruyoruz :</p>
+
+<p>  <code>$ sudo apt-get install mysql-server mysql-client</code></p>
+
+<p>  Kurulumda bizden mysql root password istiyor. Uygun bir<br/>
+  password girip kurulumun tamamlanmasını bekliyoruz.</p>
+
+<p>  Kurulum bittikten sonra mysql doğru çalışıyor mu diye<br/>
+  kontrol etmemiz gerek. Mysql prosesi var mı kontrol edelim :</p>
+
+<p>  <code>$ sudo ps ax | grep mysqld</code></p>
+
+<pre><code>  6234 ?            Ssl  O:OO /usr/sbin/mysqld
+  6546 pts/0        S+   0:00  grep --color=auto mysqld
+</code></pre>
+
+<p>  Yukarıdakine benzer bir çıktı veriyorsa mysql doğru kurulmuş demektir.<br/>
+  Ancak dilerseniz mysql e bir giriş yapalım ve emin olalım.</p>
+
+<p>  <code>$ mysql -u root -p</code></p>
+
+<p>  Kurulum yaparken ki root şifrenizi girip mysql konsolunuzu görüntüleyin.<br/>
+  <code>exit</code> diyerek çıkış yapalım.</p>
+
+<!--more-->
+
+
+<h4>Php5 &amp;  php-cgi Kurulumu</h4>
+
+<p>  Aşağıdaki komutla paketi kuralım :</p>
+
+<p>  <code>$ sudo apt-get install php5 php5-cgi</code></p>
+
+<p>  Kurulum bittikten sonra php-cgi processi çalışıyor mu kontrol edelim.</p>
+
+<p>  <code>$ sudo ps ax | grep cgi</code></p>
+
+<pre><code> 4580 pts/0    S+     0:00 grep --color=auto cgi
+</code></pre>
+
+<p>  Kuracağımız nginx sunucusunda php5 çalıştırabilmek için FastCGI kullanacağız.<br/>
+  Bu yüzden gerekli modülleri aktivesi için aşağıdaki komutu çalıştırıyoruz :</p>
+
+<p>  <code>
+  $ sudo apt-get install php5-mysql php5-curl php5-gd php5-idn php-pear     
+  php5-imagick php5-imap php5-common php5-mcrypt php5-memcache    
+  php5-mhash php5-ming php5-ps php5-pspell php5-recode php5-snmp     
+  php5-sqlite php5-tidy php5-xmlrpc php5-xsl    
+ </code></p>
+
+<p>  Bu modülleri kurduktan sonra sitelerimizi oluşturabilmek adına  <br/>
+  /var/www dizinine gerekli izni veriyoruz.<br/>
+  (eğer /www dizini yoksa kendiniz oluşturun[1]) :</p>
+
+<p>  <code>$ sudo mkdir /var/www</code> [1]<br/>
+  <code>$ sudo chmod 777 -R /var/www</code></p>
+
+<p>  Denemek için konsolunuzda :</p>
+
+<pre><code>    cat &gt;/var/www/test.php
+&lt;?php
+phpinfo();
+?&gt;
+ctrl + d
+</code></pre>
+
+<p>  Dedikten sonra web tarayıcınıza <code>http://localhost/test.php</code><br/>
+  yazdığınızda sizi php nin test sayfasının karşılamasını umuyoruz.  <br/>
+  Eğer bir terslik varsa şu ana kadar ki kurulumlarınızı gözden geçirin.</p>
+
+<h4>nginx Kurulumu</h4>
+
+<p>  nginx aşağıdaki komutla kuralım :</p>
+
+<p>  <code>$ sudo apt-get install nginx</code></p>
+
+<p>  Kurulum bittikten sonra nginx i tekrar başlatalım :</p>
+
+<p>  <code>$ sudo service nginx restart</code></p>
+
+<pre><code>Starting nginx: the configuration file /etc/nginx/nginx.conf 
+syntax is ok
+    configuration file /etc/nginx/nginx.conf 
+test is successful
+nginx.  
+</code></pre>
+
+<p>  nginx prosesi çalışıyor mu kontrol edelim :</p>
+
+<p>  <code>$ sudo netstat -pantu | grep :80</code></p>
+
+<pre><code>    (Not all processes could be identified, non-owned process info
+will not be shown, you would have to be root to see it all.)
+tcp        0      0 0.0.0.0:80              0.0.0.0:*   DİNLE  -  
+</code></pre>
+
+<p>  Şimdi sıra nginx i konfigüre etmeye geldi.</p>
+
+<p>  Aşağıdaki ayar dosyasını makinemize indirelim :</p>
+
+<p>  <code>$ wget http://aydintd.me/file/nginx-ayar</code></p>
+
+<p>  Ve bu ayar dosyasını nginx in default ayar dosyasına yükleyelim.</p>
+
+<p>  <code>$ sudo install -m 644 nginx-ayar /etc/nginx/sites-available/default</code></p>
+
+<p>  Dizin izinlerini ayarlayalım :</p>
+
+<p>  <code>$ sudo chown -R www-data:www-data /var/www/</code></p>
+
+<p>  Web tarayıcımızdan <a href="http://localhost">http://localhost</a> a girdiğimizde<br/>
+  <code>Welcome to nginx</code> gibi bir başlıkla karşılaşmamız gerek.</p>
+
+<p>  Makineyi tekrar başlatın.</p>
+
+<p>  <code>$ sudo reboot</code></p>
+
+<p>  nginx i tekrar başlatın.</p>
+
+<p>  <code>$ sudo service nginx start</code></p>
+
+<h4>Supervisor Kurulumu</h4>
+
+<p>  Paketi kuruyoruz :</p>
+
+<p>  <code>$ sudo apt-get install supervisor</code></p>
+
+<p>  Buradaki supervisor ayar dosyasını indirelim :</p>
+
+<p>  <code>$ wget http://aydintd.me/file/supervisor-ayar</code></p>
+
+<p>  Ve php.conf dosyasına ayar bilgilerini yükleyelim :</p>
+
+<p>  <code>$ install -m 644 supervisor-ayar /etc/supervisor/conf.d/php.conf</code></p>
+
+<p>  Supervisor un web sunucumuzda sürekli çalışması gerek.<br/>
+  Sürekli çalışır hale getirelim :</p>
+
+<p>  <code>$ sudo update-rc.d supervisor defaults</code></p>
+
+<pre><code>    System start/stop links for /etc/init.d/supervisor already exist.  
+</code></pre>
+
+<p>  Supervisor prosesinin çalışıp çalışmadığına bakalım :</p>
+
+<p>  <code>$ sudo ps ax | grep supervisor</code></p>
+
+<pre><code>    5469 ?        Ss     0:00 /usr/bin/python /usr/bin/supervisord
+    5495 pts/0    S+     0:00 grep --color=auto supervisor  
+</code></pre>
+
+<p>  Buraya kadar bütün kurulumlarımız tamam. Tek yapmamız gereken gereksiz  <br/>
+  nginx default ayarını sunucumuzdan kaldırmak :</p>
+
+<p>  <code>$ sudo rm -rf nginx-default/</code></p>
+
+<p>  Ve makinemizi yeniden başlatıyoruz.</p>
+
+<p>  <code>$ sudo reboot</code></p>
+
+<p>  Bütün kurulum bu kadar. Bu işlemleri doğru ve düzgün sırayla<br/>
+  yapmışsanız; makinenizin içine wordpress, moodle vb. uygulamaları
+  koyabilir, localinizde çalışma imkanına erişebilirsiniz.</p>
+
+<h4>Lütfen Dikkat!</h4>
+
+<p>  Eğer bir web sunucu üzerinde çalışmıyorsanız sanal bir makine üzerinde<br/>
+  bu kurulumları gerçekleştirmeniz şiddetle tavsiye edilir.</p>
+
+<h4>Dokümantasyonda kullanılan kaynaklar :</h4>
+
+<p>  <code>http://gdemir.me</code><br/>
+  <code>http://nginx.com/docs.html</code></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Aydın Doyak</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-14T01:44:00+02:00" pubdate data-updated="true">Jan 14<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/teknik/'>Teknik</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://aydintd.github.io/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/" data-via="aydintd_" data-counturl="http://aydintd.github.io/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/01/06/vagrant/" title="Previous Post: Vagrant">&laquo; Vagrant</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/02/22/vagrant-2/" title="Next Post: Vagrant 2">Vagrant 2 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/">Logical Volume Manager (LVM) Rehberi</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/">RedHat Scientific Linux CentOS Sanal Makine Klonlarının Eth0 ağ Arayüzü Hatasının Düzeltilmesi</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/21/yeniden-merhaba/">Yeniden Merhaba!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/">Ubuntuda Java EE Uygulamaları Için Apache Tomcat7 Uygulama Sunucusunun Kurulumu</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/22/vagrant-2/">Vagrant 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/aydintd">@aydintd</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'aydintd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus googleplus-hidden">
+  <h1>
+    <a href="https://plus.google.com/aydintd?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Aydın Doyak -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aydintd';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://aydintd.github.io/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/';
+        var disqus_url = 'http://aydintd.github.io/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
