@@ -14,7 +14,7 @@ $nav-bg-back: linear-gradient(lighten($nav-bg, 8), $nav-bg, darken($nav-bg, 11))
 $footer-bg: #ccc !default;
 $footer-bg-front: image-url('noise.png');
 $footer-bg-back: linear-gradient(lighten($footer-bg, 8), $footer-bg, darken($footer-bg, 11));
-$page-bg: darken(#eee8d5, 15);
+$page-bg: #ffffff;
 
 /* To use the light Solarized highlighting theme uncomment the following line */
 $solarized: light;
