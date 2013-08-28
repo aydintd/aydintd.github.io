@@ -1,1 +1,1 @@
-Blog aydintd.me
+Technical blog aydintd.me
