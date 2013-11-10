@@ -9,8 +9,8 @@
   <meta name="author" content="Aydın Doyak">
 
   
-  <meta name="description" content="LVM yani Logical Volume Manager var olan fiziksel diskleri, insanlık tarihinden bu yana gelen &ldquo;böl, parçala, yönet&rdquo;
-mantığıyla &hellip;">
+  <meta name="description" content="Kısaca yansıyanlar Ben bu blogu kişisel, güncel konularla meşgul etmeyi düşünmüyordum. Hala daha
+düşünmüyorum. Sonuçta güncel yaşama dair fikirlerimi &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,62 @@ mantığıyla &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/10/10-kasimdan-yansimalar/">10 Kasımdan Yansımalar</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-10T15:28:00+02:00" pubdate data-updated="true">Nov 10<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/11/10/10-kasimdan-yansimalar/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Kısaca yansıyanlar</h2>
+
+<p>Ben bu blogu kişisel, güncel konularla meşgul etmeyi düşünmüyordum. Hala daha
+düşünmüyorum. Sonuçta güncel yaşama dair fikirlerimi (ideolojik veya değil) insanlara
+anlatma çabasında hiç bir zaman olmadım. Fenomen olma kafasıyla durun bugün 10 Kasım&#8217;mış
+Atatürk&#8217;e yardıralım seviyesinde bir insan <strong>hiç</strong> olmadım. Bununla yandaş <strong>follower</strong> kasma
+meraklısı da hiç olmadım abiler.</p>
+
+<p>Ancak bugün yazma gereği duyuyorum çünkü insanlar bir ülkenin liderinin ölüm yıl dönümünde
+1 dakikalık bile bir saygı duruşunu çok gören, sabahtan akşama kadar <strong>&ldquo;yatçaz kalkcaz&rdquo;</strong>
+dinleyip de o 1 dakikalık siren sesine tahammül edemeyen o <strong>&ldquo;marjinal&rdquo;</strong> kafaları
+burada elim elim eleştirecek, deyim yerindeyse itin götüne sokacağım.</p>
+
+<p>Buraya kadar size batan bir şey olduysa eğer, lütfen devamını okumayın. Sonra alınırsınız bişeyler, bişeyler.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/10/10-kasimdan-yansimalar/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -727,70 +783,6 @@ değiştiğini göreceksiniz.</p></li>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/09/10/csvden-kullanici-grup-ekleme/">.csvden Kullanıcı/Grup Ekleme</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-09-10T15:27:00+03:00" pubdate data-updated="true">Sep 10<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/09/10/csvden-kullanici-grup-ekleme/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Kullanıcı/Grupların Eklenmesi</h2>
-
-<ul>
-<li><p><code>$ sudo ./lab-kullanıcıları-ekle Dosya_ADI</code> komutunu çalıştır</p>
-
-<p>Öntanımlı kabuğu değiştir</p>
-
-<pre><code>  #!/bin/bash
-  useradd -Ds /bin/bash
-
-  for isim in `cat $1`; do
-  useradd -d /home/$isim -p `mkpasswd 123456` $isim
-    mkdir /home/$isim
-    chown -R $isim:$isim /home/$isim
-  done
-</code></pre>
-
-<p>Betiğe argüman olarak verilecek dosya formatı şu şekilde olmalıdır:</p>
-
-<pre><code>  cankurnaz  
-  aydindoyak  
-</code></pre>
-
-<p>UYARI: Bu dosyada türkçe karakter ve noktalama işaretleri olmamalıdır; bu<br/>
-işlemin öncesinde dosyayı belirtilen formata uygun hale getirin.</p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -806,6 +798,10 @@ işlemin öncesinde dosyayı belirtilen formata uygun hale getirin.</p></li>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/11/10/10-kasimdan-yansimalar/">10 Kasımdan Yansımalar</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/">Logical Volume Manager (LVM) Rehberi</a>
       </li>
     
@@ -819,10 +815,6 @@ işlemin öncesinde dosyayı belirtilen formata uygun hale getirin.</p></li>
     
       <li class="post">
         <a href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/">Ubuntuda Java EE Uygulamaları Için Apache Tomcat7 Uygulama Sunucusunun Kurulumu</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/22/vagrant-2/">Vagrant 2</a>
       </li>
     
   </ul>
