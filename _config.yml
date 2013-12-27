@@ -3,11 +3,11 @@
 # ----------------------- #
 
 url: http://aydintd.github.io
-title: Teknik, Kişisel Blog
-subtitle: aydintd@eagle:~$ echo 'Hello World!'
+title: Aydın Doyak
+subtitle: aydintd@eagle:~$ echo 'Teknik, Kişisel Blog!'
 author: Aydın Doyak
 simple_search: http://google.com/search
-description: Kişisel ve Teknik Blog
+description: Kişisel ve Teknik Blog | Aydın Doyak
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
