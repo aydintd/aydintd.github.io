@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Kişisel | Aydın Doyak]]></title>
+  <link href="http://aydintd.me/blog/categories/kisisel/atom.xml" rel="self"/>
+  <link href="http://aydintd.me/"/>
+  <updated>2013-12-27T03:11:24+02:00</updated>
+  <id>http://aydintd.me/</id>
+  <author>
+    <name><![CDATA[Aydın Doyak]]></name>
+    <email><![CDATA[aydintd@bil.omu.edu.tr]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Yeniden Merhaba! ]]></title>
+    <link href="http://aydintd.me/blog/2013/05/21/yeniden-merhaba/"/>
+    <updated>2013-05-21T22:02:00+03:00</updated>
+    <id>http://aydintd.me/blog/2013/05/21/yeniden-merhaba</id>
+    <content type="html"><![CDATA[<p>Octopress ile sizlere tekrar merhaba demeyi uzun zamandır planlıyordum.<br/>
+Bundan böyle bu şablon ve yapı altında çalışmalarımı sizinle paylaşacağım.
+Bir çok güzel özelliği, pluginleri vb. ile ne zamandır beni cezbediyordu zaten,
+ben de gerekli zamanı bulup siteyi göç ettirdim.</p>
+
+<p>Yazın sıcak ama yakmayan, kışın da soğuk ama yakmayan yerleri seviyoruz.<br/>
+Erik mevsimi de açıldığına göre&hellip;</p>
+
+<hr />
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[LTSP-DHCP Konfigurasyonu]]></title>
+    <link href="http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/"/>
+    <updated>2012-05-10T18:42:00+03:00</updated>
+    <id>http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu</id>
+    <content type="html"><![CDATA[<h2>LTSP Kurulumu</h2>
+
+<ul>
+<li><p>LTSP sunucuyu kur</p>
+
+<p><code>$ sudo apt-get install ltsp-server-standalone</code></p>
+
+<p>Bu komut LTSP ve (eğer kurulu değilse) DHCP sunucuyu birlikte kurar.</p></li>
+</ul>
+
+
+<h2>LTSP Yapılandırması</h2>
+
+<ul>
+<li><p><code>/etc/ltsp/ltsp-build-client.conf</code> dosyasını düzenle</p>
+
+<pre><code>  `# The chroot architecture.
+   ARCH=i386
+
+   # ubuntu-desktop and edubuntu-desktop are tested.
+   # If you test with [k|x]ubuntu-desktop, edit this page and mention if it worked OK.
+   # kubuntu lucid (10.10) working okay.
+   FAT_CLIENT_DESKTOPS="ubuntu-desktop"
+
+   # Space separated list of programs to install.
+   # The java plugin installation contained in ubuntu-restricted-extras
+   # needs some special care, so let's use it as an example.
+   LATE_PACKAGES="
+       ubuntu-restricted-extras
+       gimp
+       nfs-client"
+
+   # This is needed to answer "yes" to the Java EULA.
+   # We'll create that file in the next step.
+   DEBCONF_SEEDS="/etc/ltsp/debconf.seeds"
+
+   # This uses the server apt cache to speed up downloading.
+   # This locks the servers dpkg, so you can't use apt on
+   # the server while building the chroot.
+   MOUNT_PACKAGE_DIR="/var/cache/apt/archives/"`
+</code></pre></li>
+</ul>
+
+
+<h2>DHCP Yapılandırılması</h2>
+
+<ul>
+<li><p><code>/etc/ltsp/dhcpd.conf</code> dosyasını düzenle</p>
+
+<pre><code>  authoritative;
+  allow bootp;
+
+  subnet 10.0.2.0 netmask 255.255.255.0 {
+      range 10.0.2.20 10.0.2.250;
+
+      option domain-name "example.com";
+      option domain-name-servers 192.168.111.5;
+      option broadcast-address 10.0.2.255;
+      option routers 10.0.2.2;
+  #    next-server 192.168.0.1;
+
+  #    get-lease-hostnames true;
+      option subnet-mask 255.255.255.0;
+      option root-path "/opt/ltsp/i386";
+      if substring( option vendor-class-identifier, 0, 9 ) = "PXEClient" {
+          filename "/ltsp/i386/pxelinux.0";
+
+      } else {
+          filename "/ltsp/i386/nbi.img";
+      }
+  }
+</code></pre>
+
+<p><code>option domain-name-servers</code> karşısına yazılan adres, internetinizin o anki
+size verdiği DNS adresi olmalı. Aksi takdirde daha sonradan kurulacak olan
+istemcinin internete bağlı gözüktüğünü ancak herhangi bir web sitesini
+açamadığını göreceksiniz.</p></li>
+<li><p><code>/etc/default/isc-dhcp-server</code> dosyasında arayüzü (<code>INTERFACES</code>) düzenle
+<code>INTERFACES</code>&lsquo;i etkinleştir</p>
+
+<p><code>
+INTERFACES = "eth1"
+</code></p></li>
+<li><p>Sunucuları yeniden başlat</p>
+
+<p><code>$ service networking restart</code></p>
+
+<p><code>$ service dhcp3-server restart</code></p></li>
+</ul>
+
+
+<h2>İstemci Kurulumu</h2>
+
+<ul>
+<li><p>İstemci paketini kur</p>
+
+<p><code>$ ltsp-build-client --fat-client --fat-client-desktop ubuntu.desktop --arch i386 --skipimage</code></p>
+
+<p>Bu komut istemcileri sunucu içerisinde <code>/opt/ltsp/i386</code> dizini altında
+oluşturur.  İstemciye hangi dağıtımı kurmak istiyorsanız, kodda o işletim
+sistemini yazmalısınız; ör. Ubuntu için <code>ubuntu.desktop</code></p></li>
+</ul>
+
+
+<!--more-->
+
+
+<h2>İstemci Güncelle</h2>
+
+<ul>
+<li><p>İstemciye gir</p>
+
+<p><code>$ chroot /opt/ltsp/i386</code></p></li>
+<li><p>İstemci imajını güncelle</p>
+
+<p><code>$ ltsp-update-sshkeys</code></p>
+
+<p><code>$ ltsp-update-image --arch i386</code></p></li>
+</ul>
+
+
+<h2>Ağ Yapılandırması</h2>
+
+<ul>
+<li><p><code>/etc/network/interfaces</code> dosyasını düzenle</p>
+
+<pre><code>  auto lo
+
+  iface lo inet loopback
+
+  auto eth1
+
+  iface eth1 inet static
+         address 10.0.0.2
+         netmask 255.255.255.254
+         broadcast 10.0.2.255
+
+  auto eth2
+
+  iface eth2 inet dhcp
+</code></pre>
+
+<p>Tüm bunlardan sonra, sunucunun internet bağlantısının olduğunu ancak,
+istemcinin internet bağlantısının olmadığını göreceksiniz.</p>
+
+<p>Bunun nedeni istemcinin sunucudan internete bağlanma isteği göndermesine
+karşın sunucunun buna izin vermemesidir. Yani sunucu, kendi üzerinden
+istemcilere internete çıkma hakkı tanımıyor.</p>
+
+<p>İç ağdaki makinaların internet üzerindeki makinalarla haberleşmesini
+sağlayabilmek için NAT Maskelemesi (Network Access Translation Masquerade)
+yapılmalıdır.</p></li>
+</ul>
+
+
+<h2>NAT</h2>
+
+<ul>
+<li><p><code>/etc/init.d/rc.local</code> dosyasını düzenle</p>
+
+<p><code>$ iptables -t nat -A POSTROUTING -o eth2 -j MASQUERADE</code></p>
+
+<p><code>$ echo "1" &gt; /proc/sys/net/ipv4/ip_forward</code></p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

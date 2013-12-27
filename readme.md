@@ -1,0 +1,1 @@
+Technical blog aydintd.me

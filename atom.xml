@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Aydın Doyak]]></title>
+  <link href="http://aydintd.me/atom.xml" rel="self"/>
+  <link href="http://aydintd.me/"/>
+  <updated>2013-12-27T03:11:24+02:00</updated>
+  <id>http://aydintd.me/</id>
+  <author>
+    <name><![CDATA[Aydın Doyak]]></name>
+    <email><![CDATA[aydintd@bil.omu.edu.tr]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Logical Volume Manager (LVM) Rehberi]]></title>
+    <link href="http://aydintd.me/blog/2013/08/25/logical-volume-manager-lvm-rehberi/"/>
+    <updated>2013-08-25T16:38:00+03:00</updated>
+    <id>http://aydintd.me/blog/2013/08/25/logical-volume-manager-lvm-rehberi</id>
+    <content type="html"><![CDATA[<p>LVM yani Logical Volume Manager var olan fiziksel diskleri, insanlık tarihinden bu yana gelen &ldquo;böl, parçala, yönet&rdquo;
+mantığıyla sanallaştırıp yönetmek amaçlı yazılmış çok yararlı bir program. Bir ya da birden fazla olan disklerinizi
+tek bir disk havuzuymuş gibi gösterip, partitions ile karmaşık disk alanı hesaplamalarını sizin yerinize soyutlayıp
+yapıyor.</p>
+
+<p>Bir çok linux dağıtımı artık öntanımlı LVM disk formatı seçeneğiyle gelmekte. Özellikle son sürüm işletim sistemleri
+aksini belirtmediğiniz takdirde bu şekilde sisteminize kuruluyor.</p>
+
+<p>Bu blog yazısında lvm ile volume grup oluşturma, birden fazla olan disklerinizi volume gruplar
+içerisinde toplayıp daha sonrasında toplam disk alanınız üzerinden nasıl disk bölümlemesi yapıldığını anlatacağım.</p>
+
+<h2>Hazırlık</h2>
+
+<p>Ben bir Ubuntu 12.10 sanal makinesi üzerinde 16GB ve 14GB lık iki diski lvm ile sanallaştırıp toplamda 30GB lık tek bir
+sanal disk yaratıp, daha sonra keyfimize göre bu diski sanal olarak bölümleyeceğim.</p>
+
+<p>Aşağıdaki komut ile disklerinizi görüntüleyin.</p>
+
+<p><code>$ sudo fdisk -l</code></p>
+
+<p>Aşağıdaki gibi bölümler göreceksiniz :</p>
+
+<pre><code>`Disk /dev/sdb: 17.2 GB, 17179869184 bytes
+255 heads, 63 sectors/track, 2088 cylinders, total 33554432 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+Disk /dev/sdb doesn't contain a valid partition table
+
+Disk /dev/sdc: 15.0 GB, 15032385536 bytes
+255 heads, 63 sectors/track, 1827 cylinders, total 29360128 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+Disk /dev/sdc doesn't contain a valid partition table`
+</code></pre>
+
+<p>Bu çıktıdan anladığımız, işletim sistemimiz disklerimizden fiziksel olarak haberdar, ancak
+hiç bir disk bölümlemesi yapılmadığından dolayı ağlıyor.</p>
+
+<p>Disk bölümlemelerini aşağıdaki gibi yapın :</p>
+
+<p><code>$ sudo fdisk /dev/sdb</code></p>
+
+<p>Açılan konsolda <code>m</code> harfine basarak aşağıdaki gibi yardımcı komutu görüntüleyebilirsiniz :</p>
+
+<pre><code>Command action
+    a   toggle a bootable flag
+    b   edit bsd disklabel
+    c   toggle the dos compatibility flag
+    d   delete a partition
+    l   list known partition types
+    m   print this menu
+    n   add a new partition
+    o   create a new empty DOS partition table
+    p   print the partition table
+    q   quit without saving changes
+    s   create a new empty Sun disklabel
+    t   change a partition's system id
+    u   change display/entry units
+    v   verify the partition table
+    w   write table to disk and exit
+    x   extra functionality (experts only)
+</code></pre>
+
+<p><code>n</code> harfiyle <code>/dev/sdb</code> diskinde bir bölüm oluşturma işine başlayın. Size bu bölümün primary mi logical mı olacağını soracak.
+Öntanımlı primary olarak seçim geliyor. Primary seçtikten sonra oluşturduğumuz disk bölümü için 1-4 arası bir değer girmenizi
+sizden isteyecek. İsteğinize göre seçip disk bölümünün diskin ne kadarını bölüm için ayarlayacağınızı size soracak. Ben bu örnekte
+tüm diski tek bir bölüm olarak oluşturacağım. Daha sonra <code>w</code> harfiyle değişiklikleri yapıp fdisk programından çıkış yapacağım.</p>
+
+<p>Yukarıda anlatmaya çalıştığım süreç aşağıdaki gibi gözükecek :</p>
+
+<pre><code>Command (m for help): n
+Partition type:
+    p   primary (0 primary, 0 extended, 4 free)
+    e   extended
+    Select (default p): 
+    Using default response p
+    Partition number (1-4, default 1): 
+    Using default value 1
+    First sector (2048-33554431, default 2048): 
+    Using default value 2048
+    last sector, +sectors or +size{K,M,G} (2048-33554431, default 33554431): 
+    Using default value 33554431
+
+    Command (m for help): w
+    The partition table has been altered!
+
+    Calling ioctl() to re-read partition table.
+    Syncing disks.
+
+vagrant@precise32:~$
+</code></pre>
+
+<p>Aynı işlemi <code>/dev/sdc</code> için de yapın.</p>
+
+<!--more-->
+
+
+<h2>LVM Rehberi</h2>
+
+<p>Şu anda sistemimizdeki 16GB ve 14GB lık iki diskimizi oluşturduk. Sıra bu diskleri <code>lvm</code> ile sanallaştırmaya geldi.</p>
+
+<p><code>lvm2</code> programını aşağıdaki şekilde indirin :</p>
+
+<p><code>$ sudo apt-get install lvm2</code></p>
+
+<p>Eklediğimiz diskleri physical volume olarak oluşturmamız gerekecek :</p>
+
+<p><code>$ sudo pvcreate /dev/sdb1 /dev/sdc1</code></p>
+
+<p>Physical volume disklerinizi listeleyin :</p>
+
+<p><code>$ sudo pvs</code></p>
+
+<pre><code>vagrant@precise32:~$ sudo pvs
+    PV         VG        Fmt  Attr PSize  PFree 
+    /dev/sda5  precise32 lvm2 a-   79.76g     0 
+    /dev/sdb1            lvm2 a-   16.00g 16.00g
+    /dev/sdc1            lvm2 a-   14.00g 14.00g
+</code></pre>
+
+<p>Detaylı liste için :</p>
+
+<p><code>$ sudo pvdisplay</code></p>
+
+<p>Physical Volume&#8217;lerinizin herhangi bir Volume Grubuna ait olmadığı yukarıda gözüküyor. Sıra geldi bu iki diskimizi
+<code>vg1</code> isimli bir volume grup içine alıp, iki ayrı fiziksel diskimizi tek bir diskmiş gibi sanallaştıralım :</p>
+
+<p><code>$ sudo vgcreate vg1 /dev/sdb1 /dev/sdc1</code></p>
+
+<p>Volume Group listelemek için :</p>
+
+<p><code>$ sudo vgdisplay</code></p>
+
+<p>Çıktısını aşağıdaki gibi :</p>
+
+<pre><code>vagrant@precise32:~$ sudo vgdisplay 
+--- Volume group ---
+VG Name               vg1
+  System ID             
+    Format                lvm2
+    Metadata Areas        2
+    Metadata Sequence No  1
+    VG Access             read/write
+    VG Status             resizable
+    MAX LV                0
+    Cur LV                0
+    Open LV               0
+    Max PV                0
+    Cur PV                2
+    Act PV                2
+    VG Size               29.99 GiB
+    PE Size               4.00 MiB
+    Total PE              7678
+    Alloc PE / Size       0 / 0   
+    Free  PE / Size       7678 / 29.99 GiB
+    VG UUID               K9QzS7-D8aI-O24O-Rcsb-2aMd-pY2D-3zjP5w
+</code></pre>
+
+<p>Yukarıda görebileceğiniz gibi 2 metadata alanı (2 disk) ve toplamda 29.99 GiB tek bir sanal disk oluşturduk.</p>
+
+<p>Şimdi sıra oluşturduğumuz vg1 isimli Volume Group&#8217;u istediğimiz büyüklükte istediğimiz kadar sanal diske bölüp
+sistemimizde kullanılabilir hale getirmeye geldi.</p>
+
+<p>Ben örnek olarak 30 GiB lık toplam boş alanı olan diskimi <code>lv01</code> ve <code>lv02</code> 15 ve 14er GiB lık sanal disklere böleceğim.</p>
+
+<p><code>NOT:</code> Tembel olduğumdan dolayı tam 30 GiB alan hesaplamaya üşendim açıkcası. :)</p>
+
+<p><code>$ sudo lvcreate -L +15G -n lv01 vg1</code></p>
+
+<p><code>sudo lvcreate -L +14G -n lv02 vg1</code></p>
+
+<p>Şimdi oluşturduğumuz Logical Volume&#8217;larımızı listeleyelim :</p>
+
+<p><code>$ sudo lvdisplay</code></p>
+
+<pre><code>vagrant@precise32:~$ sudo lvdisplay 
+--- Logical volume ---
+LV Name                /dev/vg1/lv01
+VG Name                vg1
+LV UUID                W9TxNd-ORun-k0Cx-2psu-iI1p-8fQc-SroVSm
+LV Write Access        read/write
+LV Status              available
+# open                 0
+LV Size                15.00 GiB
+Current LE             3840
+Segments               1
+Allocation             inherit
+Read ahead sectors     auto
+- currently set to     256
+Block device           252:2
+
+--- Logical volume ---
+LV Name                /dev/vg1/lv02
+VG Name                vg1
+LV UUID                zP1NJX-QwlD-JzBm-PYLU-5nFZ-i9vq-q7n3Vv
+LV Write Access        read/write
+LV Status              available
+# open                 0
+LV Size                14.00 GiB
+Current LE             3584
+Segments               2
+Allocation             inherit
+Read ahead sectors     auto
+- currently set to     256
+Block device           252:3
+</code></pre>
+
+<p>Logical Volume&#8217;larımızı da oluşturduk. Sıra geldi bunu sistemimizde kullanılabilir hale getirmeye :</p>
+
+<p>Ubuntu ortamında geliştirme yaptığım için <code>mkfs</code> programı kullanarak oluşturduğum sanal diskleri <code>ext4</code> ile formatlayacağım :</p>
+
+<p><code>$ sudo mkfs.ext4 /dev/mapper/vg1-lv02</code></p>
+
+<p>Çıktısı aşağıdaki gibi olacak :</p>
+
+<pre><code>vagrant@precise32:~$ sudo mkfs.ext4 /dev/vg1/lv01
+mke2fs 1.42 (29-Nov-2011)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+983040 inodes, 3932160 blocks
+196608 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=4026531840
+120 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks: 
+32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done 
+</code></pre>
+
+<p>Aynı işlemi oluşturduğumuz diğer Logical Volume için de yapıp diski formatlayın.</p>
+
+<p>Artık <code>ext4</code> olarak formatladığımız 15 GB&#8217;lık diskimizi sistemde kullanabiliriz.</p>
+
+<p>Ben <code>/mnt</code> dizini altında disk1 isimli bir dizin oluşturup, bu dizin altına <code>lv01</code> diskimi <code>mount</code> edeceğim.</p>
+
+<p><code>$ sudo mkdir /mnt/disk1</code></p>
+
+<p><code>$ sudo mount /dev/vg1/lv01 /mnt/disk1</code></p>
+
+<p>Ve diskiniz hazır, diğer hazırladığınız diski de dilerseniz aynı yöntemle formatlayıp sisteme mount edebilirsiniz.</p>
+
+<p>Diski görebilmek için :</p>
+
+<p><code>$ df -h</code></p>
+
+<pre><code>vagrant@precise32:/mnt/disk2$ df -h
+Filesystem                  Size  Used Avail Use% Mounted on
+/dev/mapper/precise32-root   79G  2.1G   73G   3% /
+udev                        178M  4.0K  178M   1% /dev
+tmpfs                        74M  296K   74M   1% /run
+none                        5.0M     0  5.0M   0% /run/lock
+none                        185M     0  185M   0% /run/shm
+/dev/sda1                   228M   24M  192M  12% /boot
+/vagrant                    290G   65G  225G  23% /vagrant
+/dev/mapper/vg1-lv01         15G  354M   14G   3% /mnt/lv01
+/dev/mapper/vg1-lv02         14G  340M   13G   3% /mnt/disk2
+</code></pre>
+
+<p>Hepsi bu kadar :)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RedHat Scientific Linux CentOS Sanal Makine Klonlarının eth0 Ağ Arayüzü Hatasının Düzeltilmesi]]></title>
+    <link href="http://aydintd.me/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/"/>
+    <updated>2013-06-25T02:25:00+03:00</updated>
+    <id>http://aydintd.me/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi</id>
+    <content type="html"><![CDATA[<p>Scientific Linux 6 sürümünü VirtualBox&#8217;da &ldquo;bare&rdquo; olarak klonlayıp, ağ konfigürasyonunu
+yaparken ilginç bir hatayla karşılaştım. İnternette bir çok yerde SL, CentOS ve
+türev sürümlerinin VirtualBox klonlarının internet erişimini sağlayamadığından yakınan
+baya bir kullanıcı girdisi okudum.<br/>
+Bir kaç okuma yaptıktan sonra, şöyle bir şey keşfettim :</p>
+
+<p>VirtualBox, VMWare gibi sanallaştırma araçları, ilgili klonların her birine
+kendisi bir MAC adresi atıyor. Ancak SL, CentOS gibi sürümlerin kernel&#8217;leri kendilerine atanan
+bu yeni konfigürasyonu ilk başta update edemiyorlar. Eski kernel&#8217;da kayıtlı MAC adresiyle
+VBox&#8217;un klonlara atadığı MAC adresi de örtüşmediğinden sanal makineniz sadece loopback
+arayüzünü başlatabiliyor ve eth0 ölü halde kalıyor. Dolayısıyla klonlar internete
+çıkamıyorlar.</p>
+
+<h2>Peki Çözüm Nasıl Olmalı?</h2>
+
+<ul>
+<li>Kernel&#8217;ın başta oluşturduğu &ldquo;ağ arayüzü kuralları&rdquo; dosyasını silelim. Böylece
+klon yeniden başlatıldığında kernel kendine yeni bir kural dosyası üretebilsin
+ve böylece VM tarafından atanan yeni MAC adresini kendine kaydedebilsin :</li>
+</ul>
+
+
+<p><code>$ sudo rm -rf /etc/udev/rules.d/70-persistent-net.rules</code></p>
+
+<p><code>$ sudo reboot</code></p>
+
+<ul>
+<li>Makine yeniden başladıktan sonra sıra geldi ağ yapılandırmasına.
+SL 6.4 de default olarak gelen text editörü <code>vi</code> olduğundan dosya
+düzenlemelerini vi ile göstereceğim :</li>
+</ul>
+
+
+<p><code>$ sudo vi /etc/sysconfig/network-scripts/ifcfg-eth0</code></p>
+
+<ul>
+<li>Dosyada aşağıdaki değişiklikleri uygulayalım :</li>
+</ul>
+
+
+<p><code>MACADDR</code> girdisini kaldıralım.</p>
+
+<p><code>UUID</code> girdisini kaldıralım.</p>
+
+<p>ve dosyayı kaydedip çıkalım.</p>
+
+<ul>
+<li>Ağ konfigürasyonumuzu tamamladık, servisi yeniden başlatmalıyız ki girdiğimiz
+ayarlar klon tarafından görülebilsin.</li>
+</ul>
+
+
+<p><code>$ service network restart</code></p>
+
+<ul>
+<li>ve İnternete çıkış yaptık mı? Ping&#8217;leyerek kontrol edelim :</li>
+</ul>
+
+
+<p><code>$ ping 8.8.8.8</code></p>
+
+<p>Ta-daa! Klonunuz internete çıkmaya hazır. Tek yapmanız gereken ihtiyacınız olan servisi
+&ldquo;yum&#8221;lamak.</p>
+
+<p><code>Önemli Not:</code> VirtualBox&#8217;da Ağ Seçeneği NAT olarak ayarlı olmalı.</p>
+
+<h2>Kaynakça</h2>
+
+<p><code>http://blog.roozbehk.com/post/35156862882/redhat-add-network-eth</code></p>
+
+<p><code>http://www.envision-systems.com.au/blog/2012/09/21/fix-eth0-network-interface-when-cloning-redhat-centos-or-scientific-virtual-machines-using-oracle-virtualbox-or-vmware/</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Yeniden Merhaba! ]]></title>
+    <link href="http://aydintd.me/blog/2013/05/21/yeniden-merhaba/"/>
+    <updated>2013-05-21T22:02:00+03:00</updated>
+    <id>http://aydintd.me/blog/2013/05/21/yeniden-merhaba</id>
+    <content type="html"><![CDATA[<p>Octopress ile sizlere tekrar merhaba demeyi uzun zamandır planlıyordum.<br/>
+Bundan böyle bu şablon ve yapı altında çalışmalarımı sizinle paylaşacağım.
+Bir çok güzel özelliği, pluginleri vb. ile ne zamandır beni cezbediyordu zaten,
+ben de gerekli zamanı bulup siteyi göç ettirdim.</p>
+
+<p>Yazın sıcak ama yakmayan, kışın da soğuk ama yakmayan yerleri seviyoruz.<br/>
+Erik mevsimi de açıldığına göre&hellip;</p>
+
+<hr />
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ubuntuda Java EE uygulamaları için Apache tomcat7 Uygulama Sunucusunun Kurulumu]]></title>
+    <link href="http://aydintd.me/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/"/>
+    <updated>2013-02-26T23:34:00+02:00</updated>
+    <id>http://aydintd.me/blog/2013/02/26/ubuntuda-java-ee-uygulamaları-için-apache-tomcat7-uygulama-sunucusunun-kurulumu</id>
+    <content type="html"><![CDATA[<p>  Java2EE web uygulamaları için gereken açık kaynak apache-tomcat7 uygulama<br/>
+  sunucusunun kurulumunu adım adım takip edelim :</p>
+
+<h3>Başlarken</h3>
+
+<p>  Kurulum Linux Ubuntu 12.10 32bit işletim sistemi üzerinde Apache Tomcat 7.0.30<br/>
+  sürümü olarak sizi yönlendirecektir.</p>
+
+<ul>
+<li> Not : Tomcat Uygulama sunucusunu kurmadan, makinenizde Java nın kurulu<br/>
+olduğundan emin olun.</li>
+</ul>
+
+
+<h3>Kurulum</h3>
+
+<p>  Aşağıdaki komutları çalıştırın :</p>
+
+<p>  <code>$ sudo apt-get update &amp;&amp; sudo apt-get install tomcat7</code></p>
+
+<p>  Böylece tomcat7 uygulama sunucusunu makinemize kurmuş olacağız.</p>
+
+<!--more-->
+
+
+<h3>Konfigurasyon</h3>
+
+<p>  tomcat7 sunucusunu konfigurasyona başlamak için durduralım :</p>
+
+<p>  <code>$ sudo service tomcat7 stop</code></p>
+
+<p>  <code>&gt; Stopping Tomcat servlet engine tomcat7 [ OK ]</code></p>
+
+<p>  Favori text editörünüzle tomcat7 in ayar dosyasını açıp içerisindeki commentli halde bulunan (#)<br/>
+  JAVA_HOME dosya yolununun commentini kaldırıp aşağıdaki hale getirin.</p>
+
+<p>  <code>$ sudo vim /etc/default/tomcat7</code></p>
+
+<p>  <code>JAVA_HOME=/usr/lib/jvm/jdk1.7.0</code></p>
+
+<ul>
+<li> Not : Makinenizde kurulu olan JDK nın dosya yolunu doğru verdiğinizden emin<br/>
+olun. Aksi halde uygulama sunucunuz başlayamayacaktır.</li>
+</ul>
+
+
+<p>  Sunucumuzu tekrar başlatalım :</p>
+
+<p>  <code>$ sudo service tomcat7 start</code></p>
+
+<p>  Tomcat için Firewall unuzda ön tanımlı bir port açın :</p>
+
+<p>  <code>$ sudo ufw enable 8080/tcp</code></p>
+
+<p>  Sunucunun JDK üzerinde çalıştığından emin olalım :</p>
+
+<p>  <code>$ /usr/share/tomcat7/bin/version.sh</code></p>
+
+<p>  Aşağıdaki gibi JVM çıktılarını gözlemlemelisiniz.</p>
+
+<pre><code>    Using CATALINA_BASE:   /usr/share/tomcat7     
+    Using CATALINA_HOME:   /usr/share/tomcat7     
+    Using CATALINA_TMPDIR: /usr/share/tomcat7/temp        
+    Using JRE_HOME:        /usr       
+    Using CLASSPATH:    
+    /usr/share/tomcat7/bin/bootstrap.jar:/usr/share/tomcat7/bin/tomcat-juli.jar      
+    Server version: Apache Tomcat/7.0.30        
+    Server built:   Jan 10 2013 04:10:25        
+    Server number:  7.0.30.0    
+    OS Name:        Linux       
+    OS Version:     3.5.0-25-generic    
+    Architecture:   i386  
+    JVM Version:    1.7.0-b147  
+    JVM Vendor:     Oracle Corporation  
+</code></pre>
+
+<h3>Son</h3>
+
+<p>  Web Browser a <code>http://localhost:8080</code> yazdığınızda <code>It Works!</code> gibi bir yazı  <br/>
+  görüyorsanız, tomcat7 uygulama sunucu kurulumunu başarıyla gerçekleştirmişsinizdir.</p>
+
+<ul>
+<li>Önemli not : Kurulumdan hemen sonra Eclipse editörü üzerinde bir<br/>
+Java EE uygulamasını görüntülemek istiyorsanız, tomcat7 sunucunuzu konsoldan tekrar kapatmanız gerekebilir.<br/>
+Uygulamayı görüntülemeye çalıştığınızda tomcat7 in başka bir prosesle meşgul olduğu<br/>
+mesajıyla karşı karşıya kalırsanız,tomcat7 sunucusunu elle kapatın ve Eclipse editörü yardımıyla
+uygulamanızı tekrar sunucu üzerinde görüntülemeye çalışın.(çalıştırın)</li>
+</ul>
+
+
+<h3>Kaynakça</h3>
+
+<p>  <code>http://hendrelouw73.wordpress.com</code><br/>
+  <code>blog.eviac.com</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vagrant 2]]></title>
+    <link href="http://aydintd.me/blog/2013/02/22/vagrant-2/"/>
+    <updated>2013-02-22T02:02:00+02:00</updated>
+    <id>http://aydintd.me/blog/2013/02/22/vagrant-2</id>
+    <content type="html"><![CDATA[<p>  Vagrant Temel Kutu Hazırlama konusunda hazırladığım doküman sayfasına
+  aşağıdaki linkten ulaşabilirsiniz.</p>
+
+<p>  <a href="http://aydintd.me/fo/vagrant-2/#slide1">Vagrant 2</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Nginx-mysql-php5 cgi-supervisor Kurulumu]]></title>
+    <link href="http://aydintd.me/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/"/>
+    <updated>2013-01-14T01:44:00+02:00</updated>
+    <id>http://aydintd.me/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu</id>
+    <content type="html"><![CDATA[<p>  php denemeleri yapabileceğimiz nginx web sunucusu için <br/>
+  gereken ortamı sırasıyla kuralım :</p>
+
+<h3>Kurulum İçerikleri</h3>
+
+<ul>
+<li> mysql Kurulumu</li>
+<li> nginx Kurulumu ve Konfigürasyonu</li>
+<li> php5-cgi Kurulumu</li>
+<li> supervisor Kurulumu</li>
+</ul>
+
+
+<h4>Mysql Kurulumu</h4>
+
+<p>  Paketi aşağıdaki şekilde kuruyoruz :</p>
+
+<p>  <code>$ sudo apt-get install mysql-server mysql-client</code></p>
+
+<p>  Kurulumda bizden mysql root password istiyor. Uygun bir<br/>
+  password girip kurulumun tamamlanmasını bekliyoruz.</p>
+
+<p>  Kurulum bittikten sonra mysql doğru çalışıyor mu diye<br/>
+  kontrol etmemiz gerek. Mysql prosesi var mı kontrol edelim :</p>
+
+<p>  <code>$ sudo ps ax | grep mysqld</code></p>
+
+<pre><code>  6234 ?            Ssl  O:OO /usr/sbin/mysqld
+  6546 pts/0        S+   0:00  grep --color=auto mysqld
+</code></pre>
+
+<p>  Yukarıdakine benzer bir çıktı veriyorsa mysql doğru kurulmuş demektir.<br/>
+  Ancak dilerseniz mysql e bir giriş yapalım ve emin olalım.</p>
+
+<p>  <code>$ mysql -u root -p</code></p>
+
+<p>  Kurulum yaparken ki root şifrenizi girip mysql konsolunuzu görüntüleyin.<br/>
+  <code>exit</code> diyerek çıkış yapalım.</p>
+
+<!--more-->
+
+
+<h4>Php5 &amp;  php-cgi Kurulumu</h4>
+
+<p>  Aşağıdaki komutla paketi kuralım :</p>
+
+<p>  <code>$ sudo apt-get install php5 php5-cgi</code></p>
+
+<p>  Kurulum bittikten sonra php-cgi processi çalışıyor mu kontrol edelim.</p>
+
+<p>  <code>$ sudo ps ax | grep cgi</code></p>
+
+<pre><code> 4580 pts/0    S+     0:00 grep --color=auto cgi
+</code></pre>
+
+<p>  Kuracağımız nginx sunucusunda php5 çalıştırabilmek için FastCGI kullanacağız.<br/>
+  Bu yüzden gerekli modülleri aktivesi için aşağıdaki komutu çalıştırıyoruz :</p>
+
+<p>  <code>
+  $ sudo apt-get install php5-mysql php5-curl php5-gd php5-idn php-pear     
+  php5-imagick php5-imap php5-common php5-mcrypt php5-memcache    
+  php5-mhash php5-ming php5-ps php5-pspell php5-recode php5-snmp     
+  php5-sqlite php5-tidy php5-xmlrpc php5-xsl    
+ </code></p>
+
+<p>  Bu modülleri kurduktan sonra sitelerimizi oluşturabilmek adına  <br/>
+  /var/www dizinine gerekli izni veriyoruz.<br/>
+  (eğer /www dizini yoksa kendiniz oluşturun[1]) :</p>
+
+<p>  <code>$ sudo mkdir /var/www</code> [1]<br/>
+  <code>$ sudo chmod 777 -R /var/www</code></p>
+
+<p>  Denemek için konsolunuzda :</p>
+
+<pre><code>    cat &gt;/var/www/test.php
+&lt;?php
+phpinfo();
+?&gt;
+ctrl + d
+</code></pre>
+
+<p>  Dedikten sonra web tarayıcınıza <code>http://localhost/test.php</code><br/>
+  yazdığınızda sizi php nin test sayfasının karşılamasını umuyoruz.  <br/>
+  Eğer bir terslik varsa şu ana kadar ki kurulumlarınızı gözden geçirin.</p>
+
+<h4>nginx Kurulumu</h4>
+
+<p>  nginx aşağıdaki komutla kuralım :</p>
+
+<p>  <code>$ sudo apt-get install nginx</code></p>
+
+<p>  Kurulum bittikten sonra nginx i tekrar başlatalım :</p>
+
+<p>  <code>$ sudo service nginx restart</code></p>
+
+<pre><code>Starting nginx: the configuration file /etc/nginx/nginx.conf 
+syntax is ok
+    configuration file /etc/nginx/nginx.conf 
+test is successful
+nginx.  
+</code></pre>
+
+<p>  nginx prosesi çalışıyor mu kontrol edelim :</p>
+
+<p>  <code>$ sudo netstat -pantu | grep :80</code></p>
+
+<pre><code>    (Not all processes could be identified, non-owned process info
+will not be shown, you would have to be root to see it all.)
+tcp        0      0 0.0.0.0:80              0.0.0.0:*   DİNLE  -  
+</code></pre>
+
+<p>  Şimdi sıra nginx i konfigüre etmeye geldi.</p>
+
+<p>  Aşağıdaki ayar dosyasını makinemize indirelim :</p>
+
+<p>  <code>$ wget http://aydintd.me/file/nginx-ayar</code></p>
+
+<p>  Ve bu ayar dosyasını nginx in default ayar dosyasına yükleyelim.</p>
+
+<p>  <code>$ sudo install -m 644 nginx-ayar /etc/nginx/sites-available/default</code></p>
+
+<p>  Dizin izinlerini ayarlayalım :</p>
+
+<p>  <code>$ sudo chown -R www-data:www-data /var/www/</code></p>
+
+<p>  Web tarayıcımızdan <a href="http://localhost">http://localhost</a> a girdiğimizde<br/>
+  <code>Welcome to nginx</code> gibi bir başlıkla karşılaşmamız gerek.</p>
+
+<p>  Makineyi tekrar başlatın.</p>
+
+<p>  <code>$ sudo reboot</code></p>
+
+<p>  nginx i tekrar başlatın.</p>
+
+<p>  <code>$ sudo service nginx start</code></p>
+
+<h4>Supervisor Kurulumu</h4>
+
+<p>  Paketi kuruyoruz :</p>
+
+<p>  <code>$ sudo apt-get install supervisor</code></p>
+
+<p>  Buradaki supervisor ayar dosyasını indirelim :</p>
+
+<p>  <code>$ wget http://aydintd.me/file/supervisor-ayar</code></p>
+
+<p>  Ve php.conf dosyasına ayar bilgilerini yükleyelim :</p>
+
+<p>  <code>$ install -m 644 supervisor-ayar /etc/supervisor/conf.d/php.conf</code></p>
+
+<p>  Supervisor un web sunucumuzda sürekli çalışması gerek.<br/>
+  Sürekli çalışır hale getirelim :</p>
+
+<p>  <code>$ sudo update-rc.d supervisor defaults</code></p>
+
+<pre><code>    System start/stop links for /etc/init.d/supervisor already exist.  
+</code></pre>
+
+<p>  Supervisor prosesinin çalışıp çalışmadığına bakalım :</p>
+
+<p>  <code>$ sudo ps ax | grep supervisor</code></p>
+
+<pre><code>    5469 ?        Ss     0:00 /usr/bin/python /usr/bin/supervisord
+    5495 pts/0    S+     0:00 grep --color=auto supervisor  
+</code></pre>
+
+<p>  Buraya kadar bütün kurulumlarımız tamam. Tek yapmamız gereken gereksiz  <br/>
+  nginx default ayarını sunucumuzdan kaldırmak :</p>
+
+<p>  <code>$ sudo rm -rf nginx-default/</code></p>
+
+<p>  Ve makinemizi yeniden başlatıyoruz.</p>
+
+<p>  <code>$ sudo reboot</code></p>
+
+<p>  Bütün kurulum bu kadar. Bu işlemleri doğru ve düzgün sırayla<br/>
+  yapmışsanız; makinenizin içine wordpress, moodle vb. uygulamaları
+  koyabilir, localinizde çalışma imkanına erişebilirsiniz.</p>
+
+<h4>Lütfen Dikkat!</h4>
+
+<p>  Eğer bir web sunucu üzerinde çalışmıyorsanız sanal bir makine üzerinde<br/>
+  bu kurulumları gerçekleştirmeniz şiddetle tavsiye edilir.</p>
+
+<h4>Dokümantasyonda kullanılan kaynaklar :</h4>
+
+<p>  <code>http://gdemir.me</code><br/>
+  <code>http://nginx.com/docs.html</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vagrant]]></title>
+    <link href="http://aydintd.me/blog/2013/01/06/vagrant/"/>
+    <updated>2013-01-06T22:54:00+02:00</updated>
+    <id>http://aydintd.me/blog/2013/01/06/vagrant</id>
+    <content type="html"><![CDATA[<p>  Vagrantla ilgili hazırladığım doküman folyosuna aşağıdaki linkten ulaşabilirsiniz :</p>
+
+<p>  <a href="http://aydintd.github.com/fo/vagrant/#slide1">Vagrant</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ubuntuda Makine Adı Değiştirme]]></title>
+    <link href="http://aydintd.me/blog/2012/10/14/ubuntuda-makine-ad%C4%B1-de%C4%9Fi%C5%9Ftirme/"/>
+    <updated>2012-10-14T20:12:00+03:00</updated>
+    <id>http://aydintd.me/blog/2012/10/14/ubuntuda-makine-adı-değiştirme</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>Ubuntu 12.04 işletim sistemi sürümünde<br/>
+makine adı kolayca değiştirilebiliyor.<br/>
+Bu işlemi sadece iki adımda yapabilirsiniz :</p></li>
+<li><p><code>$ gksudo gedit /etc/hostname</code> içine girin<br/>
+ve açılan dosyaya olmasını istediğiniz makine ismini<br/>
+yazın.</p></li>
+<li><p>Daha sonra; <code>$ gksudo gedit /etc/hosts</code> komutunu<br/>
+çalıştırdığınızda aşağıdaki gibi bir dosya görünümü<br/>
+görüyor olmanız lazım :</p>
+
+<pre><code>  127.0.0.1      localhost  
+  127.0.1.1      peekaboo
+
+  # The following lines are desirable for IPv6 capable hosts
+  ::1 ip6-localhost ip6-loopback
+  fe00::0 ip6-localnet
+  ff00::0 ip6-mcastprefix
+  ff02::1 ip6-allnodes
+  ff02::2 ip6-allrouters
+</code></pre>
+
+<p><code>127.0.1.1      peekaboo</code> satırında peekaboo yazan kısmı bir<br/>
+önceki adımda olmasını istediğiniz makine ismiyle değiştirin.</p></li>
+<li><p>Son olarak <code>$ sudo reboot</code> diyerek sisteminizi yeniden<br/>
+başlatın. Başlangıç sayfasında ve uçbiriminizde makine adınızın<br/>
+değiştiğini göreceksiniz.</p></li>
+<li><p>Dip not : Örnekteki peekaboo kendi kullandığım makine ismidir.</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Betik ile Paket/Gem Kurulumu]]></title>
+    <link href="http://aydintd.me/blog/2012/09/10/paket-kurulumlari/"/>
+    <updated>2012-09-10T23:49:00+03:00</updated>
+    <id>http://aydintd.me/blog/2012/09/10/paket-kurulumlari</id>
+    <content type="html"><![CDATA[<h2>Paket Kurulumu</h2>
+
+<ul>
+<li><p><code>sudo ./lab-paket-gem-yükle gem_listesi paket_listesi</code> komutunu çalıştır</p>
+
+<pre><code>  #!/bin/bash
+  for gem in `cat $1`; do
+  gemler="$gemler $gem"
+  done
+
+  gem install $gemler
+
+  for paket in `cat $2`; do
+  paketler="$paketlerler $paket"
+  done
+
+  gem install $paketler
+</code></pre>
+
+<p> UYARI: Bu listeler her bir gem ve paket adını alt alta olacak şekilde eklemelidir.<br/>
+ Örnek dosya: src/gemler.txt ve src/paketler.txt</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[.csvden Kullanıcı/Grup Ekleme]]></title>
+    <link href="http://aydintd.me/blog/2012/09/10/csvden-kullanici-grup-ekleme/"/>
+    <updated>2012-09-10T15:27:00+03:00</updated>
+    <id>http://aydintd.me/blog/2012/09/10/csvden-kullanici-grup-ekleme</id>
+    <content type="html"><![CDATA[<h2>Kullanıcı/Grupların Eklenmesi</h2>
+
+<ul>
+<li><p><code>$ sudo ./lab-kullanıcıları-ekle Dosya_ADI</code> komutunu çalıştır</p>
+
+<p>Öntanımlı kabuğu değiştir</p>
+
+<pre><code>  #!/bin/bash
+  useradd -Ds /bin/bash
+
+  for isim in `cat $1`; do
+  useradd -d /home/$isim -p `mkpasswd 123456` $isim
+    mkdir /home/$isim
+    chown -R $isim:$isim /home/$isim
+  done
+</code></pre>
+
+<p>Betiğe argüman olarak verilecek dosya formatı şu şekilde olmalıdır:</p>
+
+<pre><code>  cankurnaz  
+  aydindoyak  
+</code></pre>
+
+<p>UYARI: Bu dosyada türkçe karakter ve noktalama işaretleri olmamalıdır; bu<br/>
+işlemin öncesinde dosyayı belirtilen formata uygun hale getirin.</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[LTSP-DHCP Konfigurasyonu]]></title>
+    <link href="http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/"/>
+    <updated>2012-05-10T18:42:00+03:00</updated>
+    <id>http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu</id>
+    <content type="html"><![CDATA[<h2>LTSP Kurulumu</h2>
+
+<ul>
+<li><p>LTSP sunucuyu kur</p>
+
+<p><code>$ sudo apt-get install ltsp-server-standalone</code></p>
+
+<p>Bu komut LTSP ve (eğer kurulu değilse) DHCP sunucuyu birlikte kurar.</p></li>
+</ul>
+
+
+<h2>LTSP Yapılandırması</h2>
+
+<ul>
+<li><p><code>/etc/ltsp/ltsp-build-client.conf</code> dosyasını düzenle</p>
+
+<pre><code>  `# The chroot architecture.
+   ARCH=i386
+
+   # ubuntu-desktop and edubuntu-desktop are tested.
+   # If you test with [k|x]ubuntu-desktop, edit this page and mention if it worked OK.
+   # kubuntu lucid (10.10) working okay.
+   FAT_CLIENT_DESKTOPS="ubuntu-desktop"
+
+   # Space separated list of programs to install.
+   # The java plugin installation contained in ubuntu-restricted-extras
+   # needs some special care, so let's use it as an example.
+   LATE_PACKAGES="
+       ubuntu-restricted-extras
+       gimp
+       nfs-client"
+
+   # This is needed to answer "yes" to the Java EULA.
+   # We'll create that file in the next step.
+   DEBCONF_SEEDS="/etc/ltsp/debconf.seeds"
+
+   # This uses the server apt cache to speed up downloading.
+   # This locks the servers dpkg, so you can't use apt on
+   # the server while building the chroot.
+   MOUNT_PACKAGE_DIR="/var/cache/apt/archives/"`
+</code></pre></li>
+</ul>
+
+
+<h2>DHCP Yapılandırılması</h2>
+
+<ul>
+<li><p><code>/etc/ltsp/dhcpd.conf</code> dosyasını düzenle</p>
+
+<pre><code>  authoritative;
+  allow bootp;
+
+  subnet 10.0.2.0 netmask 255.255.255.0 {
+      range 10.0.2.20 10.0.2.250;
+
+      option domain-name "example.com";
+      option domain-name-servers 192.168.111.5;
+      option broadcast-address 10.0.2.255;
+      option routers 10.0.2.2;
+  #    next-server 192.168.0.1;
+
+  #    get-lease-hostnames true;
+      option subnet-mask 255.255.255.0;
+      option root-path "/opt/ltsp/i386";
+      if substring( option vendor-class-identifier, 0, 9 ) = "PXEClient" {
+          filename "/ltsp/i386/pxelinux.0";
+
+      } else {
+          filename "/ltsp/i386/nbi.img";
+      }
+  }
+</code></pre>
+
+<p><code>option domain-name-servers</code> karşısına yazılan adres, internetinizin o anki
+size verdiği DNS adresi olmalı. Aksi takdirde daha sonradan kurulacak olan
+istemcinin internete bağlı gözüktüğünü ancak herhangi bir web sitesini
+açamadığını göreceksiniz.</p></li>
+<li><p><code>/etc/default/isc-dhcp-server</code> dosyasında arayüzü (<code>INTERFACES</code>) düzenle
+<code>INTERFACES</code>&lsquo;i etkinleştir</p>
+
+<p><code>
+INTERFACES = "eth1"
+</code></p></li>
+<li><p>Sunucuları yeniden başlat</p>
+
+<p><code>$ service networking restart</code></p>
+
+<p><code>$ service dhcp3-server restart</code></p></li>
+</ul>
+
+
+<h2>İstemci Kurulumu</h2>
+
+<ul>
+<li><p>İstemci paketini kur</p>
+
+<p><code>$ ltsp-build-client --fat-client --fat-client-desktop ubuntu.desktop --arch i386 --skipimage</code></p>
+
+<p>Bu komut istemcileri sunucu içerisinde <code>/opt/ltsp/i386</code> dizini altında
+oluşturur.  İstemciye hangi dağıtımı kurmak istiyorsanız, kodda o işletim
+sistemini yazmalısınız; ör. Ubuntu için <code>ubuntu.desktop</code></p></li>
+</ul>
+
+
+<!--more-->
+
+
+<h2>İstemci Güncelle</h2>
+
+<ul>
+<li><p>İstemciye gir</p>
+
+<p><code>$ chroot /opt/ltsp/i386</code></p></li>
+<li><p>İstemci imajını güncelle</p>
+
+<p><code>$ ltsp-update-sshkeys</code></p>
+
+<p><code>$ ltsp-update-image --arch i386</code></p></li>
+</ul>
+
+
+<h2>Ağ Yapılandırması</h2>
+
+<ul>
+<li><p><code>/etc/network/interfaces</code> dosyasını düzenle</p>
+
+<pre><code>  auto lo
+
+  iface lo inet loopback
+
+  auto eth1
+
+  iface eth1 inet static
+         address 10.0.0.2
+         netmask 255.255.255.254
+         broadcast 10.0.2.255
+
+  auto eth2
+
+  iface eth2 inet dhcp
+</code></pre>
+
+<p>Tüm bunlardan sonra, sunucunun internet bağlantısının olduğunu ancak,
+istemcinin internet bağlantısının olmadığını göreceksiniz.</p>
+
+<p>Bunun nedeni istemcinin sunucudan internete bağlanma isteği göndermesine
+karşın sunucunun buna izin vermemesidir. Yani sunucu, kendi üzerinden
+istemcilere internete çıkma hakkı tanımıyor.</p>
+
+<p>İç ağdaki makinaların internet üzerindeki makinalarla haberleşmesini
+sağlayabilmek için NAT Maskelemesi (Network Access Translation Masquerade)
+yapılmalıdır.</p></li>
+</ul>
+
+
+<h2>NAT</h2>
+
+<ul>
+<li><p><code>/etc/init.d/rc.local</code> dosyasını düzenle</p>
+
+<p><code>$ iptables -t nat -A POSTROUTING -o eth2 -j MASQUERADE</code></p>
+
+<p><code>$ echo "1" &gt; /proc/sys/net/ipv4/ip_forward</code></p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
