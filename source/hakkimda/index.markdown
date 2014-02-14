@@ -11,15 +11,15 @@ footer: true
 
 91 yılı Nisan doğumlu  
 Ondokuz Mayıs Üniversitesi  
-Bilgisayar Mühendisliği 3. Sınıf Öğrencisi  
-Beşiktaşlı  
-Otomasyona ve platform bağımsızlığına düşkün  
-UNIX Sistem Yöneticisi Adayı  
+Bilgisayar Mühendisliği 4. Sınıf Öğrencisi    
+Linux Sistem Yöneticisi Adayı  
+Genellikle Sanallaştırma, Konuşlandırma, Sunucu Yönetimi  
+Ve hoşuma giden diğer özgür yazılımlar  
 
 ##  Ne?
 
 Teknik içerikli çalışmalarımı paylaşmak amaçlı açtığım  
 ilk aydintd.me'nin jekyll'dan türetilmiş ve devamı olan kişisel blog  
-
+Ara ara ancak faydalı şeyler yazmaya çalışıyorum.  
 
 
