@@ -9,7 +9,7 @@
   <meta name="author" content="Aydın Doyak">
 
   
-  <meta name="description" content="LTSP Kurulumu LTSP sunucuyu kur $ sudo apt-get install ltsp-server-standalone Bu komut LTSP ve (eğer kurulu değilse) DHCP sunucuyu birlikte kurar. &hellip;">
+  <meta name="description" content="Kullanıcı/Grupların Eklenmesi $ sudo ./lab-kullanıcıları-ekle Dosya_ADI komutunu çalıştır Öntanımlı kabuğu değiştir #!/bin/bash useradd -Ds /bin/bash &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +79,70 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/09/10/csvden-kullanici-grup-ekleme/">.csvden Kullanıcı/Grup Ekleme</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-10T15:27:00+03:00" pubdate data-updated="true">Sep 10<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/09/10/csvden-kullanici-grup-ekleme/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Kullanıcı/Grupların Eklenmesi</h2>
+
+<ul>
+<li><p><code>$ sudo ./lab-kullanıcıları-ekle Dosya_ADI</code> komutunu çalıştır</p>
+
+<p>Öntanımlı kabuğu değiştir</p>
+
+<pre><code>  #!/bin/bash
+  useradd -Ds /bin/bash
+
+  for isim in `cat $1`; do
+  useradd -d /home/$isim -p `mkpasswd 123456` $isim
+    mkdir /home/$isim
+    chown -R $isim:$isim /home/$isim
+  done
+</code></pre>
+
+<p>Betiğe argüman olarak verilecek dosya formatı şu şekilde olmalıdır:</p>
+
+<pre><code>  cankurnaz  
+  aydindoyak  
+</code></pre>
+
+<p>UYARI: Bu dosyada türkçe karakter ve noktalama işaretleri olmamalıdır; bu<br/>
+işlemin öncesinde dosyayı belirtilen formata uygun hale getirin.</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -240,6 +304,10 @@ sistemini yazmalısınız; ör. Ubuntu için <code>ubuntu.desktop</code></p></li
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi/">Docker Ile mini-Heroku : Dokku Rehberi</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/">Logical Volume Manager (LVM) Rehberi</a>
       </li>
     
@@ -253,10 +321,6 @@ sistemini yazmalısınız; ör. Ubuntu için <code>ubuntu.desktop</code></p></li
     
       <li class="post">
         <a href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/">Ubuntuda Java EE Uygulamaları Için Apache Tomcat7 Uygulama Sunucusunun Kurulumu</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/22/vagrant-2/">Vagrant 2</a>
       </li>
     
   </ul>

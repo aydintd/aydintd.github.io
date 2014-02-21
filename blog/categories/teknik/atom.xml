@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Teknik | Aydın Doyak]]></title>
   <link href="http://aydintd.me/blog/categories/teknik/atom.xml" rel="self"/>
   <link href="http://aydintd.me/"/>
-  <updated>2014-02-14T04:00:18+02:00</updated>
+  <updated>2014-02-22T01:28:17+02:00</updated>
   <id>http://aydintd.me/</id>
   <author>
     <name><![CDATA[Aydın Doyak]]></name>
@@ -12,6 +12,228 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Docker ile mini-Heroku : Dokku Rehberi]]></title>
+    <link href="http://aydintd.me/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi/"/>
+    <updated>2014-02-21T23:17:00+02:00</updated>
+    <id>http://aydintd.me/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi</id>
+    <content type="html"><![CDATA[<p>Dokku, Docker ile geliştirilmiş, 100 satır civarında Bash koduyla provision edilen bir mini-Heroku, teknik adıyla PaaS projesidir.
+Kısaca bir sunucu makine üzerinde Dokku habitatını sağladıktan sonra, Heroku uyumlu uygulamaları &ldquo;git&rdquo; yardımıyla sunucuya &ldquo;push&rdquo; ettiğiniz
+esnek bir yapıyı kullanıma sunar. Pushladığınız uygulama, içeride Heroku Buildpack'lerini kullanarak kurulur ve
+birbirinden izole Docker konteynırları içerisinde yaşamaya başlarlar. Sonuç olarak; size özel, tek merkezli bir Heroku'ya sahip olursunuz.</p>
+
+<p>Dokku'nun tabiri yerindeyse hamal işini yapan 3 ağır işçisi var : Docker, Buildstep ve sshcommand(gitreceive)</p>
+
+<ul>
+<li><p><a href="http://docker.io/" title="Docker">Docker</a> : Linux ortamlarında, hafif, güçlü, kendi kendine yeten konteynırlar oluşturmaya yarayan
+açık kaynaklı bir projedir. Geliştiricilerin uygulamalarını laptoplarında, bare metal sunucularda, ürün makinelerinde,
+bulut sistemlerde, hatta sanal makinelerde dahi hızla test edebilmeleri, ürün servis edebilmelerine
+olanak sağlayan bir &ldquo;container runtime&rdquo; projesidir.</p></li>
+<li><p><a href="https://github.com/progrium/buildstep" title="Buildstep">Buildstep</a> : Heroku'nun açık kaynaklı &ldquo;buildpack"lerini; uygulamaların,
+üzerine kurulacağı temel imajı inşa etmek amacıyla kullanan bir inşaat aracıdır. Projenin adının "Docker + Heroku = Dokku&rdquo; olmasının sebebi aslında buradan kaynaklı.</p></li>
+<li><p><a href="https://github.com/progrium/sshcommand" title="Sshcommand">Sshcommand</a> : Heroku'dan aşina olduğumuz &ldquo;push&rdquo; mekanizmasını Dokku'ya kazandıran bir projedir.Size bir &ldquo;git&rdquo; kullanıcısı sağlayıp, bu kullanıcı üzerinden Dokku'ya depo push etmenize olanak sağlar.</p></li>
+</ul>
+
+
+<p>Gel gelelim hikayeden sonra işin zevkli kısmına.</p>
+
+<h2>Dokku Kurulumu</h2>
+
+<p>Ben bu rehberde kendi yerelinizde Dokku'yla nasıl oynayabileceğinizi anlatacağımdan dolayı deponun içerisinde hazır gelen Vagrant makinesi yoluyla kurulum yolunu izleyeceğim.</p>
+
+<p>Dokku'nun Vagrant makinesi Ubuntu 13.04 Raring Ringtail sürümü ile geliyor. Dokku kurulumunu sanal bir makinede yapacaksanız, Ubuntu 13 serisi işletim sistemi olarak tavsiye ediliyor.</p>
+
+<p>Ben bu rehberde <a href="https://github.com/progrium/dokku" title="Dokku">Dokku</a>&lsquo;nun kurulumu ve daha önceden Node.js ile hazırlanmış bir &ldquo;Hello World!&rdquo; uygulamasının Dokku'ya nasıl push edileceğini anlatacağım.</p>
+
+<!-- more -->
+
+
+<h3>Geliştirme Ortamının Sağlanması</h3>
+
+<p>Geliştirme ortamını hazırlarken, Dokku'yu Vagrant makinesi yardımıyla kuracağımdan, çalıştığınız host makinede &ldquo;vagrant, buna bağlı olarak
+virtualbox ve git&rdquo; kurulu olduğundan emin olun. Aksi halde kurulumu takip edemezsiniz.</p>
+
+<h3>Dokku klonlanması ve Yerel Ağ Ayarları</h3>
+
+<p>Çalışma ortamınıza Dokku'yu klonlayın :</p>
+
+<p><code>$ git clone git@github.com:progrium/dokku.git</code></p>
+
+<p><code>$ cd dokku</code></p>
+
+<p>Gördüğünüz üzere Dokku deposu halihazırda bir Vagrantfile ile gereken tüm ayarlarla beraber geliyor.</p>
+
+<p>İçeriğine göz atacak olursak :</p>
+
+<pre><code>BOX_NAME = ENV["BOX_NAME"] || "raring"
+BOX_URI = ENV["BOX_URI"] || "https://cloud-images.ubuntu.com/vagrant/raring/current/raring-server-cloudimg-amd64-vagrant-disk1.box"
+BOX_MEMORY = ENV["BOX_MEMORY"] || "512"
+DOKKU_DOMAIN = ENV["DOKKU_DOMAIN"] || "dokku.me"
+DOKKU_IP = ENV["DOKKU_IP"] || "10.0.0.2"
+PREBUILT_STACK_URL = File.exist?("#{File.dirname(__FILE__)}/stack.tgz") ? 'file:///root/dokku/stack.tgz' : nil
+
+make_cmd = "make install"
+if PREBUILT_STACK_URL
+  make_cmd = "PREBUILT_STACK_URL='#{PREBUILT_STACK_URL}' #{make_cmd}"
+end
+...
+..
+</code></pre>
+
+<p>Dokku'nun Ubuntu sunucularından raring imajı temel kutu olarak indirilip, &ldquo;dokku.me&rdquo; domain adıyla 10.0.0.2 sanal ip'sinde çalışacak şekilde ayarlanmış
+olduğunu görüyoruz. Dilerseniz domain adını, makine'nin ip'sini dilediğiniz şekilde değiştirebilirsiniz. Ben tembellik edip bu şekilde bırakacağım.
+Değişiklik yaparsanız aşağıda anlatılanlar üzerinde değişikliklerinizi yapmayı da unutmayın.</p>
+
+<p>Vagrantfile'da tanımlı bilgilere göre, Dokku çalıştığında makineye ulaşabilmeniz için yerelinizde aşağıdaki değişiklikleri yapmanız gerekiyor :</p>
+
+<p><code>$ vim /etc/hosts</code></p>
+
+<pre><code>...
+..
+10.0.0.2 dokku.me
+10.0.0.2 node-js-sample.dokku.me
+</code></pre>
+
+<p>Bu satırları hosts tanımı olarak girdiğinizde, yerel makinenizden sanal Dokku sunucunuza erişebilir olacaksınız.
+İkinci satırı, Dokku'ya push edilen uygulamaya ulaşabilmek için giriyoruz. Tamamen DNS olayı.</p>
+
+<h3>Kutu Ateşleme</h3>
+
+<p>Son olarak, dokku dizini içerisinde vagrant makinesini ayağa kaldırıyoruz :</p>
+
+<p><code>$ vagrant up</code></p>
+
+<pre><code>Bringing machine 'default' up with 'virtualbox' provider...
+[default] Importing base box 'raring'...
+[default] Matching MAC address for NAT networking...
+[default] Setting the name of the VM...
+[default] Clearing any previously set forwarded ports...
+[default] Clearing any previously set network interfaces...
+[default] Preparing network interfaces based on configuration...
+[default] Forwarding ports...
+[default] -- 22 =&gt; 2222 (adapter 1)
+[default] -- 80 =&gt; 8080 (adapter 1)
+[default] Running 'pre-boot' VM customizations...
+[default] Booting VM...
+[default] Waiting for machine to boot. This may take a few minutes...
+[default] Machine booted and ready!
+[default] Setting hostname...
+[default] Configuring and enabling network interfaces...
+[default] Mounting shared folders...
+[default] -- /vagrant
+[default] -- /root/dokku
+[default] Running provisioner: shell...
+[default] Running: inline script
+Reading package lists...
+Building dependency tree...
+Reading state information...
+...
+</code></pre>
+
+<p>Burada önemli olan, makine boot olduktan sonra Dokku ortamının bash betikleriyle provision ediliyor olması. Makine kurulumu bittikten sonra, makinenin içerisinde docker, buildpack ve sshcommand kurulumları yapılmış ve Dokku habitatı kullanıma hazır hale gelmiş olacak.</p>
+
+<p>Kurulum sonunda makineye ssh'la bağlanabiliyor olmalısınız :</p>
+
+<p><code>$ vagrant ssh</code></p>
+
+<p>Makine içerisine girdikten sonra aşağıdaki komutu vererek makinenin doğru şekilde hazırlandığından emin olun :</p>
+
+<pre><code>$ docker --version 
+&gt; Docker version 0.8.1, build a1598d1
+</code></pre>
+
+<p>Eğer makineye bağlanamıyorsanız, kutu ayakta değil demektir. Aşağıdaki komutla kutuyu yeniden up etmeyi deneyin :</p>
+
+<p><code>$ vagrant reload</code></p>
+
+<p>Makineye bağlanabiliyor ancak docker gibi gerekli programların makineye kurulmadığını düşünüyorsanız :</p>
+
+<p><code>$ vagrant provision</code></p>
+
+<p>Eğer hiç bir sıkıntı yoksa, tebrikler mini minnacık bir Heroku'nuz meydana geldi :&ndash;)</p>
+
+<h2>Dokku'ya Uygulama Konuşlandırma</h2>
+
+<p>Rehberin ikinci ayağı, ektiğinizi biçeceğiniz bölüm burası.</p>
+
+<p>Dokku'ya uygulama konuşlandırabilmeniz için, kullanıcınızın RSA açık anahtarının Dokku'ya bildirilmesi gerekiyor.
+Böylece Dokku sizi tanıyacak ve sizden gelen depoları konteynırlara yerleştirecek.</p>
+
+<p>Aşağıdaki komutu yerelinizde verin :</p>
+
+<p><code>$ cat ~/.ssh/id_rsa.pub | ssh vagrant@dokku.me "sudo sshcommand acl-add dokku &lt;aydintd&gt;</code></p>
+
+<p>Parola istediğinde, öntanımlı &lsquo;vagrant&rsquo; parolasını girin. aydintd yerine kendi kullanıcınızın ismini yazın.</p>
+
+<p>Dokku'ya parola aracılığıyla erişmeye çalışırken :</p>
+
+<pre><code>Permission denied (publickey)
+</code></pre>
+
+<p>gibi bir hata alabilirsiniz. Bu vagrant kutusuyla alakalı bir bug, elle düzeltmek gerekiyor :</p>
+
+<p>Dokku sunucusuna bağlanıp, aşağıdaki adımları takip edin :</p>
+
+<pre><code>$ sudo vim /etc/ssh/sshd_config
+
+PasswordAuthentication yes   &lt;bu girdiyi yes olarak değiştirin&gt;
+
+$ sudo service ssh restart
+</code></pre>
+
+<p>Makineden çıkıp açık anahtarınızı sunucuya tekrar göndermeyi deneyin.</p>
+
+<p>Şu şekilde bir çıktı görüyorsanız başarıyla anahtarınızı sunucuya gönderdiniz demektir :</p>
+
+<pre><code>$ cat ~/.ssh/id_rsa.pub | ssh root@dokku.me "sudo sshcommand acl-add dokku aydintd"
+root@dokku.me's password: 
+xx:3x:x6:xf:xe:f3:xx:xx:xx:xx:aa:cc:12:34:56:71
+</code></pre>
+
+<p>Son olarak <a href="http://github.com/heroku/node-js-sample" title="Buradaki">Buradaki</a> Node.js uygulamasını Dokku'ya konuşlandıralım :</p>
+
+<p>Linkteki depoyu yerelinize klonladıktan sonra, aşağıdaki adımları takip edin :</p>
+
+<p><code>$ cd node-js-sample</code></p>
+
+<p><code>$ git remote add aydintd dokku@dokku.me:node-js-sample</code></p>
+
+<p><code>$ git push aydintd master</code></p>
+
+<p>Böylece uygulamanızı Dokku'ya push ediyorsunuz. Çıktıların en sonuna bakacak olursanız :</p>
+
+<pre><code>-----&gt; Building runtime environment
+-----&gt; Discovering process types
+    Procfile declares types -&gt; web
+-----&gt; Releasing node-js-sample ...
+-----&gt; Deploying node-js-sample ...
+=====&gt; Application deployed:
+    http://node-js-sample.dokku.me
+
+To dokku@dokku.me:node-js-sample
+[new branch]      master -&gt; master
+</code></pre>
+
+<p><a href="http://node-js-sample.dokku.me">http://node-js-sample.dokku.me</a> adresini tarayıcınızda görüntülediğinizde Hello World! yazısını görüyorsanız başarıyla uygulamanızı Dokku'da konuşlandırdınız demektir.</p>
+
+<h2>Dokku Dünyasına Merhaba Diyemediyseniz  :</h2>
+
+<p>Herşeyden önce Dokku'ya bağlanıp, uygulamanızın varlığını kontrol edin :</p>
+
+<p><code>$ sudo docker ps</code></p>
+
+<pre><code>CONTAINER ID        IMAGE                       COMMAND                CREATED             STATUS              PORTS                     NAMES
+01510b674a70        app/node-js-sample:latest   /bin/bash -c /start    6 minutes ago       Up 6 minutes        0.0.0.0:49153-&gt;5000/tcp   thirsty_euclid
+</code></pre>
+
+<p>Yukarıdaki gibi bir girdi görüyorsanız, uygulamanız konteynır hale getirilmiş demektir. Eğer bu girdiyi görüyor ancak tarayıcınızda Hello World! yazısıgöremiyorsanız tarayıcınıza <code>dokku.me:49153</code> yazmayı deneyin. Eğer bu şekilde görüntüleyebiliyorsanız, uygulamanızın nginx ayarları doğru çalışmıyor diyebilirsiniz.</p>
+
+<p>Dokku'da her uygulama <code>/home/dokku/project-name</code> olarak konuşlanır. Bu dizin içerisindeki ayarlarla oynayarak debugging yapabilirsiniz.</p>
+
+<p>Hepsi bu kadar :&ndash;)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Logical Volume Manager (LVM) Rehberi]]></title>
@@ -485,202 +707,6 @@ uygulamanızı tekrar sunucu üzerinde görüntülemeye çalışın.(çalıştı
   aşağıdaki linkten ulaşabilirsiniz.</p>
 
 <p>  <a href="http://aydintd.me/fo/vagrant-2/#slide1">Vagrant 2</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Nginx-mysql-php5 cgi-supervisor Kurulumu]]></title>
-    <link href="http://aydintd.me/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/"/>
-    <updated>2013-01-14T01:44:00+02:00</updated>
-    <id>http://aydintd.me/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu</id>
-    <content type="html"><![CDATA[<p>  php denemeleri yapabileceğimiz nginx web sunucusu için <br/>
-  gereken ortamı sırasıyla kuralım :</p>
-
-<h3>Kurulum İçerikleri</h3>
-
-<ul>
-<li> mysql Kurulumu</li>
-<li> nginx Kurulumu ve Konfigürasyonu</li>
-<li> php5-cgi Kurulumu</li>
-<li> supervisor Kurulumu</li>
-</ul>
-
-
-<h4>Mysql Kurulumu</h4>
-
-<p>  Paketi aşağıdaki şekilde kuruyoruz :</p>
-
-<p>  <code>$ sudo apt-get install mysql-server mysql-client</code></p>
-
-<p>  Kurulumda bizden mysql root password istiyor. Uygun bir<br/>
-  password girip kurulumun tamamlanmasını bekliyoruz.</p>
-
-<p>  Kurulum bittikten sonra mysql doğru çalışıyor mu diye<br/>
-  kontrol etmemiz gerek. Mysql prosesi var mı kontrol edelim :</p>
-
-<p>  <code>$ sudo ps ax | grep mysqld</code></p>
-
-<pre><code>  6234 ?            Ssl  O:OO /usr/sbin/mysqld
-  6546 pts/0        S+   0:00  grep --color=auto mysqld
-</code></pre>
-
-<p>  Yukarıdakine benzer bir çıktı veriyorsa mysql doğru kurulmuş demektir.<br/>
-  Ancak dilerseniz mysql e bir giriş yapalım ve emin olalım.</p>
-
-<p>  <code>$ mysql -u root -p</code></p>
-
-<p>  Kurulum yaparken ki root şifrenizi girip mysql konsolunuzu görüntüleyin.<br/>
-  <code>exit</code> diyerek çıkış yapalım.</p>
-
-<!--more-->
-
-
-<h4>Php5 &amp;  php-cgi Kurulumu</h4>
-
-<p>  Aşağıdaki komutla paketi kuralım :</p>
-
-<p>  <code>$ sudo apt-get install php5 php5-cgi</code></p>
-
-<p>  Kurulum bittikten sonra php-cgi processi çalışıyor mu kontrol edelim.</p>
-
-<p>  <code>$ sudo ps ax | grep cgi</code></p>
-
-<pre><code> 4580 pts/0    S+     0:00 grep --color=auto cgi
-</code></pre>
-
-<p>  Kuracağımız nginx sunucusunda php5 çalıştırabilmek için FastCGI kullanacağız.<br/>
-  Bu yüzden gerekli modülleri aktivesi için aşağıdaki komutu çalıştırıyoruz :</p>
-
-<p>  <code>
-  $ sudo apt-get install php5-mysql php5-curl php5-gd php5-idn php-pear     
-  php5-imagick php5-imap php5-common php5-mcrypt php5-memcache    
-  php5-mhash php5-ming php5-ps php5-pspell php5-recode php5-snmp     
-  php5-sqlite php5-tidy php5-xmlrpc php5-xsl    
- </code></p>
-
-<p>  Bu modülleri kurduktan sonra sitelerimizi oluşturabilmek adına  <br/>
-  /var/www dizinine gerekli izni veriyoruz.<br/>
-  (eğer /www dizini yoksa kendiniz oluşturun[1]) :</p>
-
-<p>  <code>$ sudo mkdir /var/www</code> [1]<br/>
-  <code>$ sudo chmod 777 -R /var/www</code></p>
-
-<p>  Denemek için konsolunuzda :</p>
-
-<pre><code>    cat &gt;/var/www/test.php
-&lt;?php
-phpinfo();
-?&gt;
-ctrl + d
-</code></pre>
-
-<p>  Dedikten sonra web tarayıcınıza <code>http://localhost/test.php</code><br/>
-  yazdığınızda sizi php nin test sayfasının karşılamasını umuyoruz.  <br/>
-  Eğer bir terslik varsa şu ana kadar ki kurulumlarınızı gözden geçirin.</p>
-
-<h4>nginx Kurulumu</h4>
-
-<p>  nginx aşağıdaki komutla kuralım :</p>
-
-<p>  <code>$ sudo apt-get install nginx</code></p>
-
-<p>  Kurulum bittikten sonra nginx i tekrar başlatalım :</p>
-
-<p>  <code>$ sudo service nginx restart</code></p>
-
-<pre><code>Starting nginx: the configuration file /etc/nginx/nginx.conf 
-syntax is ok
-    configuration file /etc/nginx/nginx.conf 
-test is successful
-nginx.  
-</code></pre>
-
-<p>  nginx prosesi çalışıyor mu kontrol edelim :</p>
-
-<p>  <code>$ sudo netstat -pantu | grep :80</code></p>
-
-<pre><code>    (Not all processes could be identified, non-owned process info
-will not be shown, you would have to be root to see it all.)
-tcp        0      0 0.0.0.0:80              0.0.0.0:*   DİNLE  -  
-</code></pre>
-
-<p>  Şimdi sıra nginx i konfigüre etmeye geldi.</p>
-
-<p>  Aşağıdaki ayar dosyasını makinemize indirelim :</p>
-
-<p>  <code>$ wget http://aydintd.me/file/nginx-ayar</code></p>
-
-<p>  Ve bu ayar dosyasını nginx in default ayar dosyasına yükleyelim.</p>
-
-<p>  <code>$ sudo install -m 644 nginx-ayar /etc/nginx/sites-available/default</code></p>
-
-<p>  Dizin izinlerini ayarlayalım :</p>
-
-<p>  <code>$ sudo chown -R www-data:www-data /var/www/</code></p>
-
-<p>  Web tarayıcımızdan <a href="http://localhost">http://localhost</a> a girdiğimizde<br/>
-  <code>Welcome to nginx</code> gibi bir başlıkla karşılaşmamız gerek.</p>
-
-<p>  Makineyi tekrar başlatın.</p>
-
-<p>  <code>$ sudo reboot</code></p>
-
-<p>  nginx i tekrar başlatın.</p>
-
-<p>  <code>$ sudo service nginx start</code></p>
-
-<h4>Supervisor Kurulumu</h4>
-
-<p>  Paketi kuruyoruz :</p>
-
-<p>  <code>$ sudo apt-get install supervisor</code></p>
-
-<p>  Buradaki supervisor ayar dosyasını indirelim :</p>
-
-<p>  <code>$ wget http://aydintd.me/file/supervisor-ayar</code></p>
-
-<p>  Ve php.conf dosyasına ayar bilgilerini yükleyelim :</p>
-
-<p>  <code>$ install -m 644 supervisor-ayar /etc/supervisor/conf.d/php.conf</code></p>
-
-<p>  Supervisor un web sunucumuzda sürekli çalışması gerek.<br/>
-  Sürekli çalışır hale getirelim :</p>
-
-<p>  <code>$ sudo update-rc.d supervisor defaults</code></p>
-
-<pre><code>    System start/stop links for /etc/init.d/supervisor already exist.  
-</code></pre>
-
-<p>  Supervisor prosesinin çalışıp çalışmadığına bakalım :</p>
-
-<p>  <code>$ sudo ps ax | grep supervisor</code></p>
-
-<pre><code>    5469 ?        Ss     0:00 /usr/bin/python /usr/bin/supervisord
-    5495 pts/0    S+     0:00 grep --color=auto supervisor  
-</code></pre>
-
-<p>  Buraya kadar bütün kurulumlarımız tamam. Tek yapmamız gereken gereksiz  <br/>
-  nginx default ayarını sunucumuzdan kaldırmak :</p>
-
-<p>  <code>$ sudo rm -rf nginx-default/</code></p>
-
-<p>  Ve makinemizi yeniden başlatıyoruz.</p>
-
-<p>  <code>$ sudo reboot</code></p>
-
-<p>  Bütün kurulum bu kadar. Bu işlemleri doğru ve düzgün sırayla<br/>
-  yapmışsanız; makinenizin içine wordpress, moodle vb. uygulamaları
-  koyabilir, localinizde çalışma imkanına erişebilirsiniz.</p>
-
-<h4>Lütfen Dikkat!</h4>
-
-<p>  Eğer bir web sunucu üzerinde çalışmıyorsanız sanal bir makine üzerinde<br/>
-  bu kurulumları gerçekleştirmeniz şiddetle tavsiye edilir.</p>
-
-<h4>Dokümantasyonda kullanılan kaynaklar :</h4>
-
-<p>  <code>http://gdemir.me</code><br/>
-  <code>http://nginx.com/docs.html</code></p>
 ]]></content>
   </entry>
   
