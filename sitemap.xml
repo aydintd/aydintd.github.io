@@ -2,72 +2,72 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/</loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/blog/2012/09/10/csvden-kullanici-grup-ekleme/</loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/blog/2012/09/10/paket-kurulumlari/</loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>
             http://aydintd.me/blog/2012/10/14/ubuntuda-makine-ad%C4%B1-de%C4%9Fi%C5%9Ftirme/
         </loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/blog/2013/01/06/vagrant/</loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/</loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/blog/2013/02/22/vagrant-2/</loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>
             http://aydintd.me/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/
         </loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/blog/2013/05/21/yeniden-merhaba/</loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>
             http://aydintd.me/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/
         </loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/blog/2013/08/25/logical-volume-manager-lvm-rehberi/</loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
-        <loc>http://aydintd.me/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi/</loc>
-        <lastmod>2014-02-22T01:28:05+02:00</lastmod>
+        <loc>http://aydintd.me/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/</loc>
+        <lastmod>2014-05-30T03:06:42+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/hakkimda/</loc>
-        <lastmod>2014-02-14T03:59:59+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/</loc>
-        <lastmod>2014-02-22T01:28:05+02:00</lastmod>
+        <lastmod>2014-05-30T03:06:42+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/robots.txt</loc>
-        <lastmod>2014-02-14T03:42:25+02:00</lastmod>
+        <lastmod>2014-05-30T01:51:27+03:00</lastmod>
     </url>
     <url>
         <loc>http://aydintd.me/blog/archives/</loc>
-        <lastmod>2014-02-22T01:28:05+02:00</lastmod>
+        <lastmod>2014-05-30T03:06:42+03:00</lastmod>
     </url>
 </urlset>

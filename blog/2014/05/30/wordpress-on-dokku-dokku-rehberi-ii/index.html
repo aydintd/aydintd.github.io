@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Wordpress on Dokku : Dokku Rehberi II - Aydın Doyak</title>
+  <meta name="author" content="Aydın Doyak">
+
+  
+  <meta name="description" content="Bu blog yazısı Dokku Rehberi&#8217;nin ikinci kısmı olup, bu yazıda Wordpress&#8217;in Dokku PaaS sistemlerine konuşlandırılmasını anlatacağım. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://aydintd.me/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Aydın Doyak" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'> 
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37492706-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Aydın Doyak</a></h1>
+  
+    <h2>aydintd@eagle:~$ echo 'Technical, Personal Blog!'</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:aydintd.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Arşiv</a></li>
+  <li><a href="/hakkimda">Hakkımda</a></li>
+  <li><a href="http://fo.aydintd.me">Folyo</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Wordpress on Dokku : Dokku Rehberi II</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-30T01:54:00+03:00" pubdate data-updated="true">May 30<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Bu blog yazısı Dokku Rehberi&#8217;nin ikinci kısmı olup, bu yazıda Wordpress&#8217;in Dokku PaaS sistemlerine konuşlandırılmasını anlatacağım.</p>
+
+<p>Yazarken Manowar &ndash; Warriors of the World dinledim, bazı kısımlar sert gelebilir. Like thunder from the sky&hellip;</p>
+
+<p>Wordpress herkesin bildiği gibi PHP ile geliştirilmiş, bir çok veritabanı ile entegre çalışabilen bir CMS (Content Management System)
+Bir önceki yazımda Dokku&#8217;nun nasıl kurulup, nasıl kullanılacağıyla ilgili anlatımı yapmıştım. (Şu anda kayıp, farkındayım) Bu yazıdaysa Wordpress&#8217;in taşı toprağıyla ilgileneceğim.</p>
+
+<h3>Beklentiler ve Önbilgiler</h3>
+
+<p>Başlamadan önce;</p>
+
+<ul>
+<li><p>Bir sanal makineye Dokku sistemi kurup, Network ve DNS ayarlarını lokaliniz için yapmanız bekleniyor.</p></li>
+<li><p>Sonrasında Wordpress&#8217;in Dokku için modifiye ettiğim deposunu kullanarak sistemi oluşturup, veritabanı olarak Mysql kullanacağız.</p></li>
+</ul>
+
+
+<h2>Dokku Eklentileri</h2>
+
+<p>PaaS sistemlerde veritabanları eklentiler olarak web uygulamasına bağlanır. Aynı Heroku&#8217;nun Postgresql eklentisini uygulumanıza sonradan eklemeniz gibi. Bu durumu Dokku için özelleştirecek olursak, izole konteynırlarda tutulan uygulamanıza, başka bir izole konteynır içerisine kurulan veritabanınız bağlanır ve Dokku tarafından haberleştirilmesi sağlanır. Böylece uygulama ve veritabanını birbirinden ayırmış iki izole linux konteynırında tutulmuş olur.</p>
+
+<p>Bu yazıda Wordpress üzerinden gidecek olsam da, diğer web uygulamaları için izlenecek yol Dokku özelinde benzer. Bu yüzden kurmuş olduğunuz Dokku sisteme kuracağınız eklentilerle daha fazla güç kazandırmak hedefindeyiz. PhpMyAdmin&#8217;cilere selam olsun!</p>
+
+<h3>Mysql Eklentisi</h3>
+
+<p>Dokku&#8217;ya Mysql kurmak için şu abimizin(k2nr) deposundaki eklentiyi aşağıdaki şekilde sunucuya kuruyoruz :</p>
+
+<pre><code>$ cd /var/lib/dokku/plugins
+$ git clone https://github.com/k2nr/dokku-mysql-plugin mysql
+$ chmod +x mysql/install mysql/commands
+$ dokku plugins-install
+</code></pre>
+
+<p>Kurulum bittikten sonra <code>$ dokku help</code> komutuyla Dokku&#8217;ya Mysql ile ilgili özel güçler verdiğinizi görebilirsiniz :</p>
+
+<pre><code>...
+mysql:create &lt;app&gt;     Create a MySql container
+mysql:delete &lt;app&gt;     Delete specified MySql container
+mysql:info &lt;app&gt;       Display database informations
+mysql:link &lt;app&gt; &lt;db&gt;  Link an app to a MySql database
+mysql:logs &lt;app&gt;       Display last logs from MySql container
+...
+</code></pre>
+
+<p>Mysql eklentisi kurulduktan sonra bu eklenti bize WordPress için gereken veritabanı konteynırını oluşturmamıza yarayacak.</p>
+
+<h3>Dokku User-Env Compile Eklentisi</h3>
+
+<p>Bu eklenti ise Mysql konteynırıyla WordPress arasındaki bağlantıyı kurmak için gereken ortam değişkenlerini konteynırlar arası kullanabilmek için gerekiyor.</p>
+
+<p>Kurulumu şu şekilde :</p>
+
+<pre><code>$ cd /var/lib/dokku/plugins
+$ git clone https://github.com/musicglue/dokku-user-env-compile.git user-env-compile
+$ dokku plugins-install
+</code></pre>
+
+<p>Mysql konteynırı oluşturduğumuzda, eklenti bize WordPress&#8217;te tanımlamamız gereken veritabanı kullanıcısı, veritabanının adı, parolası gibi bilgileri ortam değişkenleri vasıtasıyla verecek. Biz de bu eklenti sayesinde bilgileri WordPress&#8217;e geçirip, ekstra işlem yapmadan WordPress&#8217;i kuracağız.</p>
+
+<h2>WordPress&#8217;i Dokku&#8217;ya Konuşlandırma</h2>
+
+<p>Daha önceden modifiye ettiğim Wordpress deposunu yerelinize çekin :</p>
+
+<pre><code>$ git clone git@github.com:aydintd/WordPress.git wp  # Uygulamanın ismi wp olacak buraya dikkat.
+</code></pre>
+
+<p>Modifiye&#8217;nin sebebi <code>wp-config.php</code> dosyasında yaptığım ortam değişkenlerini ortamdan almak için yaptığım düzenleme. (Bkz. PHP&#8217;de getenv() fonksiyonu)</p>
+
+<p>Şimdi uzak yolu WordPress için Dokku&#8217;ya tanımlayıp, uygulamayı push etmek :</p>
+
+<pre><code>$ cd wp
+$ git remote add dokku dokku@dokku.me:wp  # dokku.me sanalda önceden kurduğum Dokku makinesinin adresi, kafanız karışmasın.
+$ git push dokku master
+</code></pre>
+
+<p>Dokku, Heroku Buildpackleri sayesinde WordPress&#8217;in bir PHP uygulaması olduğunu anlayıp, Dokku&#8217;ya konuşlandıracak. Ben bu örnek için uygulama ismine <code>wp</code> adını vermiştim. Konuşlandırma işlemi bittiğinde ve şafakta <code>http://wp.dokku.me</code> adresine bakın, <code>Database connection error</code> görüyorsanız anlayın ki Gandalf&#8217;ın gelmesi yakın.</p>
+
+<p>Şimdiyse veritabanını wp uygulaması için oluşturalım :</p>
+
+<pre><code>$ ssh dokku@dokku.me dokku mysql:create wp
+
+-----&gt; MySql container created: mysql/wp
+    01d4a5471d35
+
+        Host: 172.17.0.3                  
+    User: 'admin'                   
+    Password: 'hFtI5DtKEa1n4KxM'
+    Database: 'db'
+    Internal port: 3306
+</code></pre>
+
+<p>Gördüğünüz üzere Mysql konteynırı da oluştu ve bize gerekli bilgiler verildi. Ancak bu bilgileri elle girmek yerine Dokku bunu kurduğumuz user-env eklentisiyle kendisi halledebiliyor. Wordpress&#8217;i de bu yüzden modifiye ettim. Bi&#8217; şey yapmıyorsunuz yani.</p>
+
+<p>Şimdiyse tarayıcınıza <code>http://wp.dokku.me</code> yazdığınızda sizi klasik Wordpress kurulum ekranı karşılayacak. PhpMyAdmin&#8217;cilere yine selam olsun!</p>
+
+<h2>Dokku Debugging Style</h2>
+
+<p>Dokku çok güçlü bir PaaS altyapısı bize sunuyor. Bu örnek özelinde yukarıdaki anlatımları uyguladığınızda başarıya ulaşamamışsanız benim karşılaştığım ve çözdüğüm bir kaç yöntemden size bahsedeyim.</p>
+
+<ul>
+<li><p>Uygulamalarınız konuşlanamamış olabilir. Dokku sunucuda :</p>
+
+<pre><code> $ sudo docker ps 
+
+ CONTAINER ID        IMAGE               COMMAND                CREATED             STATUS              PORTS                     NAMES
+ 01d4a5471d35        mysql/wp:latest     /usr/sbin/mysqld       7 minutes ago       Up 7 minutes        0.0.0.0:49197-&gt;3306/tcp   berserk_brattain       
+ 7ac0cb59bf18        dokku/wp:latest     /bin/bash -c '/start   About an hour ago   Up About an hour    0.0.0.0:49196-&gt;5000/tcp   romantic_pasteur     
+</code></pre></li>
+</ul>
+
+
+<p>Bu şekilde bir çıktı gözlemlemeniz beklenmekte. Bu çıktıyı göremiyorsanız yukarıdaki adımları takip edin.</p>
+
+<ul>
+<li>Uygulamanızla veritabanı sunucunuz haberleşemiyor olabilir. Bu durumda tarayıcıda <code>Database Connection Error</code> gözlemlemeniz beklenmekte.</li>
+</ul>
+
+
+<p>Bu durumun çeşitli sebepleri olabileceği gibi en çok karşılaştığım durum Mysql tarafından oluşturulan ortam değişkenlerinin WordPress&#8217;e düzgün geçirilememesi. Şu adımları izlerseniz fikir sahibi olabilirsiniz :</p>
+
+<p>Dokku sunucuda :</p>
+
+<pre><code>$ sudo dokku config wp  # wp uygulamasına geçirilen ortam değişkenlerini listeler, örnek çıktı :
+
+=== wp config vars ===
+DB_HOST: 172.17.0.3
+DB_NAME: db
+DB_PASS: Wdui95G7Jgv7tBkY
+DB_PORT: 3306
+DB_USER: admin
+</code></pre>
+
+<p>Bu değişkenlerle Wordpress&#8217;inizin <code>wp-config.php</code> dosyasındaki değişkenlerin birebir aynı olduğunu kontrol edin :</p>
+
+<pre><code>$ sudo dokku run wp 'cat wp-config.php'   # evet konuşlandırılan konteynırın içerisinde de komut çalıştırabiliyorsunuz!
+
+// ** MySQL settings - You can get this info from your web host ** //
+/** The name of the database for WordPress */
+define('DB_NAME', getenv('DB_NAME'));
+
+/** MySQL database username */
+define('DB_USER', getenv('DB_USER'));
+
+/** MySQL database password */
+define('DB_PASSWORD', getenv('DB_PASS'));
+
+/** MySQL hostname */
+define('DB_HOST', getenv('DB_HOST').':'.getenv('DB_PORT'));
+
+/** Database Charset to use in creating database tables. */
+define('DB_CHARSET', 'utf8');
+...
+</code></pre>
+
+<p>Gerisi sizin hayal gücünüze kalıyor. Hepsi bu kadar. :&ndash;)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Aydın Doyak</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-30T01:54:00+03:00" pubdate data-updated="true">May 30<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/teknik/'>Teknik</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://aydintd.me/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/" data-via="aydintd_" data-counturl="http://aydintd.me/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/" title="Previous Post: Logical Volume Manager (LVM) Rehberi">&laquo; Logical Volume Manager (LVM) Rehberi</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/">Wordpress on Dokku : Dokku Rehberi II</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/">Logical Volume Manager (LVM) Rehberi</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/">RedHat Scientific Linux CentOS Sanal Makine Klonlarının Eth0 ağ Arayüzü Hatasının Düzeltilmesi</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/21/yeniden-merhaba/">Yeniden Merhaba!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/">Ubuntuda Java EE Uygulamaları Için Apache Tomcat7 Uygulama Sunucusunun Kurulumu</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/aydintd">@aydintd</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'aydintd',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus googleplus-hidden">
+  <h1>
+    <a href="https://plus.google.com/aydintd?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Aydın Doyak -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aydintd';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://aydintd.me/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/';
+        var disqus_url = 'http://aydintd.me/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

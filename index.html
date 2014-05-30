@@ -9,8 +9,7 @@
   <meta name="author" content="Aydın Doyak">
 
   
-  <meta name="description" content="Dokku, Docker ile geliştirilmiş, 100 satır civarında Bash koduyla provision edilen bir mini-Heroku, teknik adıyla PaaS projesidir.
-Kısaca bir sunucu &hellip;">
+  <meta name="description" content="Bu blog yazısı Dokku Rehberi&#8217;nin ikinci kısmı olup, bu yazıda Wordpress&#8217;in Dokku PaaS sistemlerine konuşlandırılmasını anlatacağım. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -86,7 +85,7 @@ Kısaca bir sunucu &hellip;">
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi/">Docker Ile mini-Heroku : Dokku Rehberi</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/">Wordpress on Dokku : Dokku Rehberi II</a></h1>
     
     
       <p class="meta">
@@ -102,49 +101,172 @@ Kısaca bir sunucu &hellip;">
   
 
 
-<time datetime="2014-02-21T23:17:00+02:00" pubdate data-updated="true">Feb 21<span>st</span>, 2014</time>
+<time datetime="2014-05-30T01:54:00+03:00" pubdate data-updated="true">May 30<span>th</span>, 2014</time>
         
-         | <a href="/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi/#disqus_thread">Comments</a>
+         | <a href="/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Dokku, Docker ile geliştirilmiş, 100 satır civarında Bash koduyla provision edilen bir mini-Heroku, teknik adıyla PaaS projesidir.
-Kısaca bir sunucu makine üzerinde Dokku habitatını sağladıktan sonra, Heroku uyumlu uygulamaları &ldquo;git&rdquo; yardımıyla sunucuya &ldquo;push&rdquo; ettiğiniz
-esnek bir yapıyı kullanıma sunar. Pushladığınız uygulama, içeride Heroku Buildpack&#8217;lerini kullanarak kurulur ve
-birbirinden izole Docker konteynırları içerisinde yaşamaya başlarlar. Sonuç olarak; size özel, tek merkezli bir Heroku&#8217;ya sahip olursunuz.</p>
+  <div class="entry-content"><p>Bu blog yazısı Dokku Rehberi&#8217;nin ikinci kısmı olup, bu yazıda Wordpress&#8217;in Dokku PaaS sistemlerine konuşlandırılmasını anlatacağım.</p>
 
-<p>Dokku&#8217;nun tabiri yerindeyse hamal işini yapan 3 ağır işçisi var : Docker, Buildstep ve sshcommand(gitreceive)</p>
+<p>Yazarken Manowar &ndash; Warriors of the World dinledim, bazı kısımlar sert gelebilir. Like thunder from the sky&hellip;</p>
+
+<p>Wordpress herkesin bildiği gibi PHP ile geliştirilmiş, bir çok veritabanı ile entegre çalışabilen bir CMS (Content Management System)
+Bir önceki yazımda Dokku&#8217;nun nasıl kurulup, nasıl kullanılacağıyla ilgili anlatımı yapmıştım. (Şu anda kayıp, farkındayım) Bu yazıdaysa Wordpress&#8217;in taşı toprağıyla ilgileneceğim.</p>
+
+<h3>Beklentiler ve Önbilgiler</h3>
+
+<p>Başlamadan önce;</p>
 
 <ul>
-<li><p><a href="http://docker.io/" title="Docker">Docker</a> : Linux ortamlarında, hafif, güçlü, kendi kendine yeten konteynırlar oluşturmaya yarayan
-açık kaynaklı bir projedir. Geliştiricilerin uygulamalarını laptoplarında, bare metal sunucularda, ürün makinelerinde,
-bulut sistemlerde, hatta sanal makinelerde dahi hızla test edebilmeleri, ürün servis edebilmelerine
-olanak sağlayan bir &ldquo;container runtime&rdquo; projesidir.</p></li>
-<li><p><a href="https://github.com/progrium/buildstep" title="Buildstep">Buildstep</a> : Heroku&#8217;nun açık kaynaklı &ldquo;buildpack&#8221;lerini; uygulamaların,
-üzerine kurulacağı temel imajı inşa etmek amacıyla kullanan bir inşaat aracıdır. Projenin adının &#8220;Docker + Heroku = Dokku&rdquo; olmasının sebebi aslında buradan kaynaklı.</p></li>
-<li><p><a href="https://github.com/progrium/sshcommand" title="Sshcommand">Sshcommand</a> : Heroku&#8217;dan aşina olduğumuz &ldquo;push&rdquo; mekanizmasını Dokku&#8217;ya kazandıran bir projedir.Size bir &ldquo;git&rdquo; kullanıcısı sağlayıp, bu kullanıcı üzerinden Dokku&#8217;ya depo push etmenize olanak sağlar.</p></li>
+<li><p>Bir sanal makineye Dokku sistemi kurup, Network ve DNS ayarlarını lokaliniz için yapmanız bekleniyor.</p></li>
+<li><p>Sonrasında Wordpress&#8217;in Dokku için modifiye ettiğim deposunu kullanarak sistemi oluşturup, veritabanı olarak Mysql kullanacağız.</p></li>
 </ul>
 
 
-<p>Gel gelelim hikayeden sonra işin zevkli kısmına.</p>
+<h2>Dokku Eklentileri</h2>
 
-<h2>Dokku Kurulumu</h2>
+<p>PaaS sistemlerde veritabanları eklentiler olarak web uygulamasına bağlanır. Aynı Heroku&#8217;nun Postgresql eklentisini uygulumanıza sonradan eklemeniz gibi. Bu durumu Dokku için özelleştirecek olursak, izole konteynırlarda tutulan uygulamanıza, başka bir izole konteynır içerisine kurulan veritabanınız bağlanır ve Dokku tarafından haberleştirilmesi sağlanır. Böylece uygulama ve veritabanını birbirinden ayırmış iki izole linux konteynırında tutulmuş olur.</p>
 
-<p>Ben bu rehberde kendi yerelinizde Dokku&#8217;yla nasıl oynayabileceğinizi anlatacağımdan dolayı deponun içerisinde hazır gelen Vagrant makinesi yoluyla kurulum yolunu izleyeceğim.</p>
+<p>Bu yazıda Wordpress üzerinden gidecek olsam da, diğer web uygulamaları için izlenecek yol Dokku özelinde benzer. Bu yüzden kurmuş olduğunuz Dokku sisteme kuracağınız eklentilerle daha fazla güç kazandırmak hedefindeyiz. PhpMyAdmin&#8217;cilere selam olsun!</p>
 
-<p>Dokku&#8217;nun Vagrant makinesi Ubuntu 13.04 Raring Ringtail sürümü ile geliyor. Dokku kurulumunu sanal bir makinede yapacaksanız, Ubuntu 13 serisi işletim sistemi olarak tavsiye ediliyor.</p>
+<h3>Mysql Eklentisi</h3>
 
-<p>Ben bu rehberde <a href="https://github.com/progrium/dokku" title="Dokku">Dokku</a>&lsquo;nun kurulumu ve daha önceden Node.js ile hazırlanmış bir &ldquo;Hello World!&rdquo; uygulamasının Dokku&#8217;ya nasıl push edileceğini anlatacağım.</p>
+<p>Dokku&#8217;ya Mysql kurmak için şu abimizin(k2nr) deposundaki eklentiyi aşağıdaki şekilde sunucuya kuruyoruz :</p>
 
+<pre><code>$ cd /var/lib/dokku/plugins
+$ git clone https://github.com/k2nr/dokku-mysql-plugin mysql
+$ chmod +x mysql/install mysql/commands
+$ dokku plugins-install
+</code></pre>
+
+<p>Kurulum bittikten sonra <code>$ dokku help</code> komutuyla Dokku&#8217;ya Mysql ile ilgili özel güçler verdiğinizi görebilirsiniz :</p>
+
+<pre><code>...
+mysql:create &lt;app&gt;     Create a MySql container
+mysql:delete &lt;app&gt;     Delete specified MySql container
+mysql:info &lt;app&gt;       Display database informations
+mysql:link &lt;app&gt; &lt;db&gt;  Link an app to a MySql database
+mysql:logs &lt;app&gt;       Display last logs from MySql container
+...
+</code></pre>
+
+<p>Mysql eklentisi kurulduktan sonra bu eklenti bize WordPress için gereken veritabanı konteynırını oluşturmamıza yarayacak.</p>
+
+<h3>Dokku User-Env Compile Eklentisi</h3>
+
+<p>Bu eklenti ise Mysql konteynırıyla WordPress arasındaki bağlantıyı kurmak için gereken ortam değişkenlerini konteynırlar arası kullanabilmek için gerekiyor.</p>
+
+<p>Kurulumu şu şekilde :</p>
+
+<pre><code>$ cd /var/lib/dokku/plugins
+$ git clone https://github.com/musicglue/dokku-user-env-compile.git user-env-compile
+$ dokku plugins-install
+</code></pre>
+
+<p>Mysql konteynırı oluşturduğumuzda, eklenti bize WordPress&#8217;te tanımlamamız gereken veritabanı kullanıcısı, veritabanının adı, parolası gibi bilgileri ortam değişkenleri vasıtasıyla verecek. Biz de bu eklenti sayesinde bilgileri WordPress&#8217;e geçirip, ekstra işlem yapmadan WordPress&#8217;i kuracağız.</p>
+
+<h2>WordPress&#8217;i Dokku&#8217;ya Konuşlandırma</h2>
+
+<p>Daha önceden modifiye ettiğim Wordpress deposunu yerelinize çekin :</p>
+
+<pre><code>$ git clone git@github.com:aydintd/WordPress.git wp  # Uygulamanın ismi wp olacak buraya dikkat.
+</code></pre>
+
+<p>Modifiye&#8217;nin sebebi <code>wp-config.php</code> dosyasında yaptığım ortam değişkenlerini ortamdan almak için yaptığım düzenleme. (Bkz. PHP&#8217;de getenv() fonksiyonu)</p>
+
+<p>Şimdi uzak yolu WordPress için Dokku&#8217;ya tanımlayıp, uygulamayı push etmek :</p>
+
+<pre><code>$ cd wp
+$ git remote add dokku dokku@dokku.me:wp  # dokku.me sanalda önceden kurduğum Dokku makinesinin adresi, kafanız karışmasın.
+$ git push dokku master
+</code></pre>
+
+<p>Dokku, Heroku Buildpackleri sayesinde WordPress&#8217;in bir PHP uygulaması olduğunu anlayıp, Dokku&#8217;ya konuşlandıracak. Ben bu örnek için uygulama ismine <code>wp</code> adını vermiştim. Konuşlandırma işlemi bittiğinde ve şafakta <code>http://wp.dokku.me</code> adresine bakın, <code>Database connection error</code> görüyorsanız anlayın ki Gandalf&#8217;ın gelmesi yakın.</p>
+
+<p>Şimdiyse veritabanını wp uygulaması için oluşturalım :</p>
+
+<pre><code>$ ssh dokku@dokku.me dokku mysql:create wp
+
+-----&gt; MySql container created: mysql/wp
+    01d4a5471d35
+
+        Host: 172.17.0.3                  
+    User: 'admin'                   
+    Password: 'hFtI5DtKEa1n4KxM'
+    Database: 'db'
+    Internal port: 3306
+</code></pre>
+
+<p>Gördüğünüz üzere Mysql konteynırı da oluştu ve bize gerekli bilgiler verildi. Ancak bu bilgileri elle girmek yerine Dokku bunu kurduğumuz user-env eklentisiyle kendisi halledebiliyor. Wordpress&#8217;i de bu yüzden modifiye ettim. Bi&#8217; şey yapmıyorsunuz yani.</p>
+
+<p>Şimdiyse tarayıcınıza <code>http://wp.dokku.me</code> yazdığınızda sizi klasik Wordpress kurulum ekranı karşılayacak. PhpMyAdmin&#8217;cilere yine selam olsun!</p>
+
+<h2>Dokku Debugging Style</h2>
+
+<p>Dokku çok güçlü bir PaaS altyapısı bize sunuyor. Bu örnek özelinde yukarıdaki anlatımları uyguladığınızda başarıya ulaşamamışsanız benim karşılaştığım ve çözdüğüm bir kaç yöntemden size bahsedeyim.</p>
+
+<ul>
+<li><p>Uygulamalarınız konuşlanamamış olabilir. Dokku sunucuda :</p>
+
+<pre><code> $ sudo docker ps 
+
+ CONTAINER ID        IMAGE               COMMAND                CREATED             STATUS              PORTS                     NAMES
+ 01d4a5471d35        mysql/wp:latest     /usr/sbin/mysqld       7 minutes ago       Up 7 minutes        0.0.0.0:49197-&gt;3306/tcp   berserk_brattain       
+ 7ac0cb59bf18        dokku/wp:latest     /bin/bash -c '/start   About an hour ago   Up About an hour    0.0.0.0:49196-&gt;5000/tcp   romantic_pasteur     
+</code></pre></li>
+</ul>
+
+
+<p>Bu şekilde bir çıktı gözlemlemeniz beklenmekte. Bu çıktıyı göremiyorsanız yukarıdaki adımları takip edin.</p>
+
+<ul>
+<li>Uygulamanızla veritabanı sunucunuz haberleşemiyor olabilir. Bu durumda tarayıcıda <code>Database Connection Error</code> gözlemlemeniz beklenmekte.</li>
+</ul>
+
+
+<p>Bu durumun çeşitli sebepleri olabileceği gibi en çok karşılaştığım durum Mysql tarafından oluşturulan ortam değişkenlerinin WordPress&#8217;e düzgün geçirilememesi. Şu adımları izlerseniz fikir sahibi olabilirsiniz :</p>
+
+<p>Dokku sunucuda :</p>
+
+<pre><code>$ sudo dokku config wp  # wp uygulamasına geçirilen ortam değişkenlerini listeler, örnek çıktı :
+
+=== wp config vars ===
+DB_HOST: 172.17.0.3
+DB_NAME: db
+DB_PASS: Wdui95G7Jgv7tBkY
+DB_PORT: 3306
+DB_USER: admin
+</code></pre>
+
+<p>Bu değişkenlerle Wordpress&#8217;inizin <code>wp-config.php</code> dosyasındaki değişkenlerin birebir aynı olduğunu kontrol edin :</p>
+
+<pre><code>$ sudo dokku run wp 'cat wp-config.php'   # evet konuşlandırılan konteynırın içerisinde de komut çalıştırabiliyorsunuz!
+
+// ** MySQL settings - You can get this info from your web host ** //
+/** The name of the database for WordPress */
+define('DB_NAME', getenv('DB_NAME'));
+
+/** MySQL database username */
+define('DB_USER', getenv('DB_USER'));
+
+/** MySQL database password */
+define('DB_PASSWORD', getenv('DB_PASS'));
+
+/** MySQL hostname */
+define('DB_HOST', getenv('DB_HOST').':'.getenv('DB_PORT'));
+
+/** Database Charset to use in creating database tables. */
+define('DB_CHARSET', 'utf8');
+...
+</code></pre>
+
+<p>Gerisi sizin hayal gücünüze kalıyor. Hepsi bu kadar. :&ndash;)</p>
 </div>
   
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi/">Read on &rarr;</a>
-    </footer>
   
 
 
@@ -811,7 +933,7 @@ değiştiğini göreceksiniz.</p></li>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi/">Docker Ile mini-Heroku : Dokku Rehberi</a>
+        <a href="/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/">Wordpress on Dokku : Dokku Rehberi II</a>
       </li>
     
       <li class="post">

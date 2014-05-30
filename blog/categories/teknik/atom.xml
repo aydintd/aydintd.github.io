@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Teknik | Aydın Doyak]]></title>
   <link href="http://aydintd.me/blog/categories/teknik/atom.xml" rel="self"/>
   <link href="http://aydintd.me/"/>
-  <updated>2014-02-22T01:28:17+02:00</updated>
+  <updated>2014-05-30T03:25:58+03:00</updated>
   <id>http://aydintd.me/</id>
   <author>
     <name><![CDATA[Aydın Doyak]]></name>
@@ -14,224 +14,165 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Docker ile mini-Heroku : Dokku Rehberi]]></title>
-    <link href="http://aydintd.me/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi/"/>
-    <updated>2014-02-21T23:17:00+02:00</updated>
-    <id>http://aydintd.me/blog/2014/02/21/docker-ile-mini-heroku-dokku-rehberi</id>
-    <content type="html"><![CDATA[<p>Dokku, Docker ile geliştirilmiş, 100 satır civarında Bash koduyla provision edilen bir mini-Heroku, teknik adıyla PaaS projesidir.
-Kısaca bir sunucu makine üzerinde Dokku habitatını sağladıktan sonra, Heroku uyumlu uygulamaları &ldquo;git&rdquo; yardımıyla sunucuya &ldquo;push&rdquo; ettiğiniz
-esnek bir yapıyı kullanıma sunar. Pushladığınız uygulama, içeride Heroku Buildpack'lerini kullanarak kurulur ve
-birbirinden izole Docker konteynırları içerisinde yaşamaya başlarlar. Sonuç olarak; size özel, tek merkezli bir Heroku'ya sahip olursunuz.</p>
+    <title type="html"><![CDATA[Wordpress on Dokku : Dokku Rehberi II]]></title>
+    <link href="http://aydintd.me/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/"/>
+    <updated>2014-05-30T01:54:00+03:00</updated>
+    <id>http://aydintd.me/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii</id>
+    <content type="html"><![CDATA[<p>Bu blog yazısı Dokku Rehberi'nin ikinci kısmı olup, bu yazıda Wordpress'in Dokku PaaS sistemlerine konuşlandırılmasını anlatacağım.</p>
 
-<p>Dokku'nun tabiri yerindeyse hamal işini yapan 3 ağır işçisi var : Docker, Buildstep ve sshcommand(gitreceive)</p>
+<p>Yazarken Manowar &ndash; Warriors of the World dinledim, bazı kısımlar sert gelebilir. Like thunder from the sky&hellip;</p>
+
+<p>Wordpress herkesin bildiği gibi PHP ile geliştirilmiş, bir çok veritabanı ile entegre çalışabilen bir CMS (Content Management System)
+Bir önceki yazımda Dokku'nun nasıl kurulup, nasıl kullanılacağıyla ilgili anlatımı yapmıştım. (Şu anda kayıp, farkındayım) Bu yazıdaysa Wordpress'in taşı toprağıyla ilgileneceğim.</p>
+
+<h3>Beklentiler ve Önbilgiler</h3>
+
+<p>Başlamadan önce;</p>
 
 <ul>
-<li><p><a href="http://docker.io/" title="Docker">Docker</a> : Linux ortamlarında, hafif, güçlü, kendi kendine yeten konteynırlar oluşturmaya yarayan
-açık kaynaklı bir projedir. Geliştiricilerin uygulamalarını laptoplarında, bare metal sunucularda, ürün makinelerinde,
-bulut sistemlerde, hatta sanal makinelerde dahi hızla test edebilmeleri, ürün servis edebilmelerine
-olanak sağlayan bir &ldquo;container runtime&rdquo; projesidir.</p></li>
-<li><p><a href="https://github.com/progrium/buildstep" title="Buildstep">Buildstep</a> : Heroku'nun açık kaynaklı &ldquo;buildpack"lerini; uygulamaların,
-üzerine kurulacağı temel imajı inşa etmek amacıyla kullanan bir inşaat aracıdır. Projenin adının "Docker + Heroku = Dokku&rdquo; olmasının sebebi aslında buradan kaynaklı.</p></li>
-<li><p><a href="https://github.com/progrium/sshcommand" title="Sshcommand">Sshcommand</a> : Heroku'dan aşina olduğumuz &ldquo;push&rdquo; mekanizmasını Dokku'ya kazandıran bir projedir.Size bir &ldquo;git&rdquo; kullanıcısı sağlayıp, bu kullanıcı üzerinden Dokku'ya depo push etmenize olanak sağlar.</p></li>
+<li><p>Bir sanal makineye Dokku sistemi kurup, Network ve DNS ayarlarını lokaliniz için yapmanız bekleniyor.</p></li>
+<li><p>Sonrasında Wordpress'in Dokku için modifiye ettiğim deposunu kullanarak sistemi oluşturup, veritabanı olarak Mysql kullanacağız.</p></li>
 </ul>
 
 
-<p>Gel gelelim hikayeden sonra işin zevkli kısmına.</p>
+<h2>Dokku Eklentileri</h2>
 
-<h2>Dokku Kurulumu</h2>
+<p>PaaS sistemlerde veritabanları eklentiler olarak web uygulamasına bağlanır. Aynı Heroku'nun Postgresql eklentisini uygulumanıza sonradan eklemeniz gibi. Bu durumu Dokku için özelleştirecek olursak, izole konteynırlarda tutulan uygulamanıza, başka bir izole konteynır içerisine kurulan veritabanınız bağlanır ve Dokku tarafından haberleştirilmesi sağlanır. Böylece uygulama ve veritabanını birbirinden ayırmış iki izole linux konteynırında tutulmuş olur.</p>
 
-<p>Ben bu rehberde kendi yerelinizde Dokku'yla nasıl oynayabileceğinizi anlatacağımdan dolayı deponun içerisinde hazır gelen Vagrant makinesi yoluyla kurulum yolunu izleyeceğim.</p>
+<p>Bu yazıda Wordpress üzerinden gidecek olsam da, diğer web uygulamaları için izlenecek yol Dokku özelinde benzer. Bu yüzden kurmuş olduğunuz Dokku sisteme kuracağınız eklentilerle daha fazla güç kazandırmak hedefindeyiz. PhpMyAdmin'cilere selam olsun!</p>
 
-<p>Dokku'nun Vagrant makinesi Ubuntu 13.04 Raring Ringtail sürümü ile geliyor. Dokku kurulumunu sanal bir makinede yapacaksanız, Ubuntu 13 serisi işletim sistemi olarak tavsiye ediliyor.</p>
+<h3>Mysql Eklentisi</h3>
 
-<p>Ben bu rehberde <a href="https://github.com/progrium/dokku" title="Dokku">Dokku</a>&lsquo;nun kurulumu ve daha önceden Node.js ile hazırlanmış bir &ldquo;Hello World!&rdquo; uygulamasının Dokku'ya nasıl push edileceğini anlatacağım.</p>
+<p>Dokku'ya Mysql kurmak için şu abimizin(k2nr) deposundaki eklentiyi aşağıdaki şekilde sunucuya kuruyoruz :</p>
 
-<!-- more -->
-
-
-<h3>Geliştirme Ortamının Sağlanması</h3>
-
-<p>Geliştirme ortamını hazırlarken, Dokku'yu Vagrant makinesi yardımıyla kuracağımdan, çalıştığınız host makinede &ldquo;vagrant, buna bağlı olarak
-virtualbox ve git&rdquo; kurulu olduğundan emin olun. Aksi halde kurulumu takip edemezsiniz.</p>
-
-<h3>Dokku klonlanması ve Yerel Ağ Ayarları</h3>
-
-<p>Çalışma ortamınıza Dokku'yu klonlayın :</p>
-
-<p><code>$ git clone git@github.com:progrium/dokku.git</code></p>
-
-<p><code>$ cd dokku</code></p>
-
-<p>Gördüğünüz üzere Dokku deposu halihazırda bir Vagrantfile ile gereken tüm ayarlarla beraber geliyor.</p>
-
-<p>İçeriğine göz atacak olursak :</p>
-
-<pre><code>BOX_NAME = ENV["BOX_NAME"] || "raring"
-BOX_URI = ENV["BOX_URI"] || "https://cloud-images.ubuntu.com/vagrant/raring/current/raring-server-cloudimg-amd64-vagrant-disk1.box"
-BOX_MEMORY = ENV["BOX_MEMORY"] || "512"
-DOKKU_DOMAIN = ENV["DOKKU_DOMAIN"] || "dokku.me"
-DOKKU_IP = ENV["DOKKU_IP"] || "10.0.0.2"
-PREBUILT_STACK_URL = File.exist?("#{File.dirname(__FILE__)}/stack.tgz") ? 'file:///root/dokku/stack.tgz' : nil
-
-make_cmd = "make install"
-if PREBUILT_STACK_URL
-  make_cmd = "PREBUILT_STACK_URL='#{PREBUILT_STACK_URL}' #{make_cmd}"
-end
-...
-..
+<pre><code>$ cd /var/lib/dokku/plugins
+$ git clone https://github.com/k2nr/dokku-mysql-plugin mysql
+$ chmod +x mysql/install mysql/commands
+$ dokku plugins-install
 </code></pre>
 
-<p>Dokku'nun Ubuntu sunucularından raring imajı temel kutu olarak indirilip, &ldquo;dokku.me&rdquo; domain adıyla 10.0.0.2 sanal ip'sinde çalışacak şekilde ayarlanmış
-olduğunu görüyoruz. Dilerseniz domain adını, makine'nin ip'sini dilediğiniz şekilde değiştirebilirsiniz. Ben tembellik edip bu şekilde bırakacağım.
-Değişiklik yaparsanız aşağıda anlatılanlar üzerinde değişikliklerinizi yapmayı da unutmayın.</p>
-
-<p>Vagrantfile'da tanımlı bilgilere göre, Dokku çalıştığında makineye ulaşabilmeniz için yerelinizde aşağıdaki değişiklikleri yapmanız gerekiyor :</p>
-
-<p><code>$ vim /etc/hosts</code></p>
+<p>Kurulum bittikten sonra <code>$ dokku help</code> komutuyla Dokku'ya Mysql ile ilgili özel güçler verdiğinizi görebilirsiniz :</p>
 
 <pre><code>...
-..
-10.0.0.2 dokku.me
-10.0.0.2 node-js-sample.dokku.me
-</code></pre>
-
-<p>Bu satırları hosts tanımı olarak girdiğinizde, yerel makinenizden sanal Dokku sunucunuza erişebilir olacaksınız.
-İkinci satırı, Dokku'ya push edilen uygulamaya ulaşabilmek için giriyoruz. Tamamen DNS olayı.</p>
-
-<h3>Kutu Ateşleme</h3>
-
-<p>Son olarak, dokku dizini içerisinde vagrant makinesini ayağa kaldırıyoruz :</p>
-
-<p><code>$ vagrant up</code></p>
-
-<pre><code>Bringing machine 'default' up with 'virtualbox' provider...
-[default] Importing base box 'raring'...
-[default] Matching MAC address for NAT networking...
-[default] Setting the name of the VM...
-[default] Clearing any previously set forwarded ports...
-[default] Clearing any previously set network interfaces...
-[default] Preparing network interfaces based on configuration...
-[default] Forwarding ports...
-[default] -- 22 =&gt; 2222 (adapter 1)
-[default] -- 80 =&gt; 8080 (adapter 1)
-[default] Running 'pre-boot' VM customizations...
-[default] Booting VM...
-[default] Waiting for machine to boot. This may take a few minutes...
-[default] Machine booted and ready!
-[default] Setting hostname...
-[default] Configuring and enabling network interfaces...
-[default] Mounting shared folders...
-[default] -- /vagrant
-[default] -- /root/dokku
-[default] Running provisioner: shell...
-[default] Running: inline script
-Reading package lists...
-Building dependency tree...
-Reading state information...
+mysql:create &lt;app&gt;     Create a MySql container
+mysql:delete &lt;app&gt;     Delete specified MySql container
+mysql:info &lt;app&gt;       Display database informations
+mysql:link &lt;app&gt; &lt;db&gt;  Link an app to a MySql database
+mysql:logs &lt;app&gt;       Display last logs from MySql container
 ...
 </code></pre>
 
-<p>Burada önemli olan, makine boot olduktan sonra Dokku ortamının bash betikleriyle provision ediliyor olması. Makine kurulumu bittikten sonra, makinenin içerisinde docker, buildpack ve sshcommand kurulumları yapılmış ve Dokku habitatı kullanıma hazır hale gelmiş olacak.</p>
+<p>Mysql eklentisi kurulduktan sonra bu eklenti bize WordPress için gereken veritabanı konteynırını oluşturmamıza yarayacak.</p>
 
-<p>Kurulum sonunda makineye ssh'la bağlanabiliyor olmalısınız :</p>
+<h3>Dokku User-Env Compile Eklentisi</h3>
 
-<p><code>$ vagrant ssh</code></p>
+<p>Bu eklenti ise Mysql konteynırıyla WordPress arasındaki bağlantıyı kurmak için gereken ortam değişkenlerini konteynırlar arası kullanabilmek için gerekiyor.</p>
 
-<p>Makine içerisine girdikten sonra aşağıdaki komutu vererek makinenin doğru şekilde hazırlandığından emin olun :</p>
+<p>Kurulumu şu şekilde :</p>
 
-<pre><code>$ docker --version 
-&gt; Docker version 0.8.1, build a1598d1
+<pre><code>$ cd /var/lib/dokku/plugins
+$ git clone https://github.com/musicglue/dokku-user-env-compile.git user-env-compile
+$ dokku plugins-install
 </code></pre>
 
-<p>Eğer makineye bağlanamıyorsanız, kutu ayakta değil demektir. Aşağıdaki komutla kutuyu yeniden up etmeyi deneyin :</p>
+<p>Mysql konteynırı oluşturduğumuzda, eklenti bize WordPress'te tanımlamamız gereken veritabanı kullanıcısı, veritabanının adı, parolası gibi bilgileri ortam değişkenleri vasıtasıyla verecek. Biz de bu eklenti sayesinde bilgileri WordPress'e geçirip, ekstra işlem yapmadan WordPress'i kuracağız.</p>
 
-<p><code>$ vagrant reload</code></p>
+<h2>WordPress'i Dokku'ya Konuşlandırma</h2>
 
-<p>Makineye bağlanabiliyor ancak docker gibi gerekli programların makineye kurulmadığını düşünüyorsanız :</p>
+<p>Daha önceden modifiye ettiğim Wordpress deposunu yerelinize çekin :</p>
 
-<p><code>$ vagrant provision</code></p>
-
-<p>Eğer hiç bir sıkıntı yoksa, tebrikler mini minnacık bir Heroku'nuz meydana geldi :&ndash;)</p>
-
-<h2>Dokku'ya Uygulama Konuşlandırma</h2>
-
-<p>Rehberin ikinci ayağı, ektiğinizi biçeceğiniz bölüm burası.</p>
-
-<p>Dokku'ya uygulama konuşlandırabilmeniz için, kullanıcınızın RSA açık anahtarının Dokku'ya bildirilmesi gerekiyor.
-Böylece Dokku sizi tanıyacak ve sizden gelen depoları konteynırlara yerleştirecek.</p>
-
-<p>Aşağıdaki komutu yerelinizde verin :</p>
-
-<p><code>$ cat ~/.ssh/id_rsa.pub | ssh vagrant@dokku.me "sudo sshcommand acl-add dokku &lt;aydintd&gt;</code></p>
-
-<p>Parola istediğinde, öntanımlı &lsquo;vagrant&rsquo; parolasını girin. aydintd yerine kendi kullanıcınızın ismini yazın.</p>
-
-<p>Dokku'ya parola aracılığıyla erişmeye çalışırken :</p>
-
-<pre><code>Permission denied (publickey)
+<pre><code>$ git clone git@github.com:aydintd/WordPress.git wp  # Uygulamanın ismi wp olacak buraya dikkat.
 </code></pre>
 
-<p>gibi bir hata alabilirsiniz. Bu vagrant kutusuyla alakalı bir bug, elle düzeltmek gerekiyor :</p>
+<p>Modifiye'nin sebebi <code>wp-config.php</code> dosyasında yaptığım ortam değişkenlerini ortamdan almak için yaptığım düzenleme. (Bkz. PHP'de getenv() fonksiyonu)</p>
 
-<p>Dokku sunucusuna bağlanıp, aşağıdaki adımları takip edin :</p>
+<p>Şimdi uzak yolu WordPress için Dokku'ya tanımlayıp, uygulamayı push etmek :</p>
 
-<pre><code>$ sudo vim /etc/ssh/sshd_config
-
-PasswordAuthentication yes   &lt;bu girdiyi yes olarak değiştirin&gt;
-
-$ sudo service ssh restart
+<pre><code>$ cd wp
+$ git remote add dokku dokku@dokku.me:wp  # dokku.me sanalda önceden kurduğum Dokku makinesinin adresi, kafanız karışmasın.
+$ git push dokku master
 </code></pre>
 
-<p>Makineden çıkıp açık anahtarınızı sunucuya tekrar göndermeyi deneyin.</p>
+<p>Dokku, Heroku Buildpackleri sayesinde WordPress'in bir PHP uygulaması olduğunu anlayıp, Dokku'ya konuşlandıracak. Ben bu örnek için uygulama ismine <code>wp</code> adını vermiştim. Konuşlandırma işlemi bittiğinde ve şafakta <code>http://wp.dokku.me</code> adresine bakın, <code>Database connection error</code> görüyorsanız anlayın ki Gandalf'ın gelmesi yakın.</p>
 
-<p>Şu şekilde bir çıktı görüyorsanız başarıyla anahtarınızı sunucuya gönderdiniz demektir :</p>
+<p>Şimdiyse veritabanını wp uygulaması için oluşturalım :</p>
 
-<pre><code>$ cat ~/.ssh/id_rsa.pub | ssh root@dokku.me "sudo sshcommand acl-add dokku aydintd"
-root@dokku.me's password: 
-xx:3x:x6:xf:xe:f3:xx:xx:xx:xx:aa:cc:12:34:56:71
+<pre><code>$ ssh dokku@dokku.me dokku mysql:create wp
+
+-----&gt; MySql container created: mysql/wp
+    01d4a5471d35
+
+        Host: 172.17.0.3                  
+    User: 'admin'                   
+    Password: 'hFtI5DtKEa1n4KxM'
+    Database: 'db'
+    Internal port: 3306
 </code></pre>
 
-<p>Son olarak <a href="http://github.com/heroku/node-js-sample" title="Buradaki">Buradaki</a> Node.js uygulamasını Dokku'ya konuşlandıralım :</p>
+<p>Gördüğünüz üzere Mysql konteynırı da oluştu ve bize gerekli bilgiler verildi. Ancak bu bilgileri elle girmek yerine Dokku bunu kurduğumuz user-env eklentisiyle kendisi halledebiliyor. Wordpress'i de bu yüzden modifiye ettim. Bi' şey yapmıyorsunuz yani.</p>
 
-<p>Linkteki depoyu yerelinize klonladıktan sonra, aşağıdaki adımları takip edin :</p>
+<p>Şimdiyse tarayıcınıza <code>http://wp.dokku.me</code> yazdığınızda sizi klasik Wordpress kurulum ekranı karşılayacak. PhpMyAdmin'cilere yine selam olsun!</p>
 
-<p><code>$ cd node-js-sample</code></p>
+<h2>Dokku Debugging Style</h2>
 
-<p><code>$ git remote add aydintd dokku@dokku.me:node-js-sample</code></p>
+<p>Dokku çok güçlü bir PaaS altyapısı bize sunuyor. Bu örnek özelinde yukarıdaki anlatımları uyguladığınızda başarıya ulaşamamışsanız benim karşılaştığım ve çözdüğüm bir kaç yöntemden size bahsedeyim.</p>
 
-<p><code>$ git push aydintd master</code></p>
+<ul>
+<li><p>Uygulamalarınız konuşlanamamış olabilir. Dokku sunucuda :</p>
 
-<p>Böylece uygulamanızı Dokku'ya push ediyorsunuz. Çıktıların en sonuna bakacak olursanız :</p>
+<pre><code> $ sudo docker ps 
 
-<pre><code>-----&gt; Building runtime environment
------&gt; Discovering process types
-    Procfile declares types -&gt; web
------&gt; Releasing node-js-sample ...
------&gt; Deploying node-js-sample ...
-=====&gt; Application deployed:
-    http://node-js-sample.dokku.me
+ CONTAINER ID        IMAGE               COMMAND                CREATED             STATUS              PORTS                     NAMES
+ 01d4a5471d35        mysql/wp:latest     /usr/sbin/mysqld       7 minutes ago       Up 7 minutes        0.0.0.0:49197-&gt;3306/tcp   berserk_brattain       
+ 7ac0cb59bf18        dokku/wp:latest     /bin/bash -c '/start   About an hour ago   Up About an hour    0.0.0.0:49196-&gt;5000/tcp   romantic_pasteur     
+</code></pre></li>
+</ul>
 
-To dokku@dokku.me:node-js-sample
-[new branch]      master -&gt; master
+
+<p>Bu şekilde bir çıktı gözlemlemeniz beklenmekte. Bu çıktıyı göremiyorsanız yukarıdaki adımları takip edin.</p>
+
+<ul>
+<li>Uygulamanızla veritabanı sunucunuz haberleşemiyor olabilir. Bu durumda tarayıcıda <code>Database Connection Error</code> gözlemlemeniz beklenmekte.</li>
+</ul>
+
+
+<p>Bu durumun çeşitli sebepleri olabileceği gibi en çok karşılaştığım durum Mysql tarafından oluşturulan ortam değişkenlerinin WordPress'e düzgün geçirilememesi. Şu adımları izlerseniz fikir sahibi olabilirsiniz :</p>
+
+<p>Dokku sunucuda :</p>
+
+<pre><code>$ sudo dokku config wp  # wp uygulamasına geçirilen ortam değişkenlerini listeler, örnek çıktı :
+
+=== wp config vars ===
+DB_HOST: 172.17.0.3
+DB_NAME: db
+DB_PASS: Wdui95G7Jgv7tBkY
+DB_PORT: 3306
+DB_USER: admin
 </code></pre>
 
-<p><a href="http://node-js-sample.dokku.me">http://node-js-sample.dokku.me</a> adresini tarayıcınızda görüntülediğinizde Hello World! yazısını görüyorsanız başarıyla uygulamanızı Dokku'da konuşlandırdınız demektir.</p>
+<p>Bu değişkenlerle Wordpress'inizin <code>wp-config.php</code> dosyasındaki değişkenlerin birebir aynı olduğunu kontrol edin :</p>
 
-<h2>Dokku Dünyasına Merhaba Diyemediyseniz  :</h2>
+<pre><code>$ sudo dokku run wp 'cat wp-config.php'   # evet konuşlandırılan konteynırın içerisinde de komut çalıştırabiliyorsunuz!
 
-<p>Herşeyden önce Dokku'ya bağlanıp, uygulamanızın varlığını kontrol edin :</p>
+// ** MySQL settings - You can get this info from your web host ** //
+/** The name of the database for WordPress */
+define('DB_NAME', getenv('DB_NAME'));
 
-<p><code>$ sudo docker ps</code></p>
+/** MySQL database username */
+define('DB_USER', getenv('DB_USER'));
 
-<pre><code>CONTAINER ID        IMAGE                       COMMAND                CREATED             STATUS              PORTS                     NAMES
-01510b674a70        app/node-js-sample:latest   /bin/bash -c /start    6 minutes ago       Up 6 minutes        0.0.0.0:49153-&gt;5000/tcp   thirsty_euclid
+/** MySQL database password */
+define('DB_PASSWORD', getenv('DB_PASS'));
+
+/** MySQL hostname */
+define('DB_HOST', getenv('DB_HOST').':'.getenv('DB_PORT'));
+
+/** Database Charset to use in creating database tables. */
+define('DB_CHARSET', 'utf8');
+...
 </code></pre>
 
-<p>Yukarıdaki gibi bir girdi görüyorsanız, uygulamanız konteynır hale getirilmiş demektir. Eğer bu girdiyi görüyor ancak tarayıcınızda Hello World! yazısıgöremiyorsanız tarayıcınıza <code>dokku.me:49153</code> yazmayı deneyin. Eğer bu şekilde görüntüleyebiliyorsanız, uygulamanızın nginx ayarları doğru çalışmıyor diyebilirsiniz.</p>
-
-<p>Dokku'da her uygulama <code>/home/dokku/project-name</code> olarak konuşlanır. Bu dizin içerisindeki ayarlarla oynayarak debugging yapabilirsiniz.</p>
-
-<p>Hepsi bu kadar :&ndash;)</p>
+<p>Gerisi sizin hayal gücünüze kalıyor. Hepsi bu kadar. :&ndash;)</p>
 ]]></content>
   </entry>
   
