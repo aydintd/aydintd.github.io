@@ -12,23 +12,18 @@
   <meta name="description" content="LTSP Kurulumu LTSP sunucuyu kur $ sudo apt-get install ltsp-server-standalone Bu komut LTSP ve (eğer kurulu değilse) DHCP sunucuyu birlikte kurar. &hellip;">
   
 
-  <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   
   <link rel="canonical" href="http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Aydın Doyak" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'> 
-
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
   <script type="text/javascript">
@@ -47,26 +42,29 @@
 </head>
 
 <body   >
-  <header role="banner"><hgroup>
+  <div id="sidebar_control"></div>
+  <div id="sidebar">
+    <div class="logo">
+      $ echo
+    </div>
+    <div class="content hide">
+      <section role="navigation">
+        <header role="banner"><hgroup>
   <h1><a href="/">Aydın Doyak</a></h1>
   
-    <h2>aydintd@eagle:~$ echo 'Technical, Personal Blog!'</h2>
+    <h2>Teknik, Kişisel Blog</h2>
   
 </hgroup>
 
 </header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
+        
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:aydintd.me" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
-  
+
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Arşiv</a></li>
@@ -74,40 +72,34 @@
   <li><a href="http://fo.aydintd.me">Folyo</a></li>
 </ul>
 
-</nav>
+
+      </section>
+      
+        
+<section>
+  <h2>github</h2>
+  
+  <a href="https://github.com/aydintd">@aydintd</a>
+  
+  <ul id="gh_repos">
+  </ul>
+</section>
+
+
+      
+    </div>
+  </div>
   <div id="main">
-    <div id="content">
-      <div>
-<article class="hentry" role="article">
+    <div class="content">
+      <article class="hentry" role="article">
   
-  <header>
-    
+  
+    <header>
+      <div class="back"><a href="/" onclick="history.go(-1);return false;">← Back</a></div>
       <h1 class="entry-title">LTSP-DHCP Konfigurasyonu</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
+    </header>
   
-
-
-<time datetime="2012-05-10T18:42:00+03:00" pubdate data-updated="true">May 10<span>th</span>, 2012</time>
-        
-         | <a href="#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-<div class="entry-content"><h2>LTSP Kurulumu</h2>
+  <div class="entry-content"><h2>LTSP Kurulumu</h2>
 
 <ul>
 <li><p>LTSP sunucuyu kur</p>
@@ -273,16 +265,19 @@ yapılmalıdır.</p></li>
 </ul>
 
 </div>
-
-
   <footer>
-    <p class="meta">
-      
+    <div class="articlemeta">
+      <span class="hide">
+        
+
+<span class="categories">
   
+    <a class='category' href='/blog/categories/kisisel/'>Kişisel</a>
+  
+</span>
 
-<span class="byline author vcard">Posted by <span class="fn">Aydın Doyak</span></span>
-
-      
+ @
+        
 
 
 
@@ -295,20 +290,17 @@ yapılmalıdır.</p></li>
 
 
 <time datetime="2012-05-10T18:42:00+03:00" pubdate data-updated="true">May 10<span>th</span>, 2012</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/kisisel/'>Kişisel</a>
-  
-</span>
-
-
-    </p>
+      </span>
+      <span class="plus">
+        
+          <a href="#disqus_thread" onclick="return false;" data-disqus-identifier="http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/">+</a>
+        
+      </span>
+    </div>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/" data-via="aydintd_" data-counturl="http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/" data-via="aydintd_" data-counturl="http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -319,122 +311,52 @@ yapılmalıdır.</p></li>
 </div>
 
     
-    <p class="meta">
+    <div class="meta">
       
-      
-        <a class="basic-alignment right" href="/blog/2012/09/10/csvden-kullanici-grup-ekleme/" title="Next Post: .csvden Kullanıcı/Grup Ekleme">.csvden Kullanıcı/Grup Ekleme &raquo;</a>
-      
-    </p>
+    </div>
   </footer>
+
+
 </article>
 
   <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <div class="hide" id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
   </section>
 
-</div>
-
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/">Wordpress on Dokku : Dokku Rehberi II</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/">Logical Volume Manager (LVM) Rehberi</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/">RedHat Scientific Linux CentOS Sanal Makine Klonlarının Eth0 ağ Arayüzü Hatasının Düzeltilmesi</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/05/21/yeniden-merhaba/">Yeniden Merhaba!</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/">Ubuntuda Java EE Uygulamaları Için Apache Tomcat7 Uygulama Sunucusunun Kurulumu</a>
-      </li>
-    
-  </ul>
-</section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
-  
-  <a href="https://github.com/aydintd">@aydintd</a> on GitHub
-  
-  <script type="text/javascript">
-    $(document).ready(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'aydintd',
-            count: 0,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-
-<section class="googleplus googleplus-hidden">
-  <h1>
-    <a href="https://plus.google.com/aydintd?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
-</section>
-
-
-
-  
-</aside>
-
 
     </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - Aydın Doyak -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
+    <footer role="contentinfo"><div class="content">
+  <p>
+    Copyright &copy; 2014 Aydın Doyak
+  </p>
+</div>
 
 </footer>
-  
+    
 
 <script type="text/javascript">
-      var disqus_shortname = 'aydintd';
+  disqus_shortname = 'aydintd';
+  
+    disqus_identifier = 'http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/';
+    disqus_url = 'http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/';
+    function loadDisqus() {
       
-        
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/';
-        var disqus_url = 'http://aydintd.me/blog/2012/05/10/ltsp-dhcp-konfigurasyonu/';
-        var disqus_script = 'embed.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
+      // var disqus_developer = 1;
+      var disqus_script = 'embed.js';
+      (function () {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }());
+    }
+  
+  (function () {
+    var disqus_script = 'count.js';
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
 </script>
 
 
@@ -465,7 +387,7 @@ yapılmalıdır.</p></li>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
@@ -473,6 +395,50 @@ yapılmalıdır.</p></li>
 
 
 
+
+  </div>
+  <script src="/javascripts/modernizr-2.0.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+<script src="/javascripts/libs/respond.js" type="text/javascript"></script>
+<script src="/javascripts/octopress.js" type="text/javascript"></script>
+
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+    if (!window.jXHR){
+      var jxhr = document.createElement('script');
+      jxhr.type = 'text/javascript';
+      jxhr.src = '/javascripts/libs/jXHR.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jxhr, s);
+    }
+
+    github.showRepos({
+      user: 'aydintd',
+      count: 0,
+      skip_forks: true,
+      target: '#gh_repos'
+    });
+  });
+  </script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var userAgent = navigator.userAgent.toLowerCase();
+  var isiPhone = (userAgent.indexOf('iphone') != -1 || userAgent.indexOf('ipod') != -1) ? true : false;
+  var isAndroid = (userAgent.indexOf('android') != -1) ? true : false;
+  clickEvent = (isiPhone || isAndroid) ? 'touchstart' : 'click';
+  $('#sidebar').on(clickEvent, function() {
+    $(this).toggleClass('open');
+  });
+  $('.articlemeta').on(clickEvent, function() {
+    toggleDisqus();
+    $(this).toggleClass('open');
+  });
+});
+</script>
 
 </body>
 </html>

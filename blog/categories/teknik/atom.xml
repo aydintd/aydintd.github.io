@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Teknik | Aydın Doyak]]></title>
   <link href="http://aydintd.me/blog/categories/teknik/atom.xml" rel="self"/>
   <link href="http://aydintd.me/"/>
-  <updated>2014-06-05T00:04:02+03:00</updated>
+  <updated>2014-06-10T13:49:43+03:00</updated>
   <id>http://aydintd.me/</id>
   <author>
     <name><![CDATA[Aydın Doyak]]></name>
@@ -459,7 +459,7 @@ none                        185M     0  185M   0% /run/shm
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[RedHat Scientific Linux CentOS Sanal Makine Klonlarının eth0 Ağ Arayüzü Hatasının Düzeltilmesi]]></title>
+    <title type="html"><![CDATA[RedHat Scientific Linux CentOS Sanal Makine Klonlarının Eth0 ağ Arayüzü Hatasının Düzeltilmesi]]></title>
     <link href="http://aydintd.me/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/"/>
     <updated>2013-06-25T02:25:00+03:00</updated>
     <id>http://aydintd.me/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi</id>
@@ -538,7 +538,7 @@ ayarlar klon tarafından görülebilsin.</li>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Ubuntuda Java EE uygulamaları için Apache tomcat7 Uygulama Sunucusunun Kurulumu]]></title>
+    <title type="html"><![CDATA[Ubuntuda Java EE Uygulamaları Için Apache Tomcat7 Uygulama Sunucusunun Kurulumu]]></title>
     <link href="http://aydintd.me/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/"/>
     <updated>2013-02-26T23:34:00+02:00</updated>
     <id>http://aydintd.me/blog/2013/02/26/ubuntuda-java-ee-uygulamaları-için-apache-tomcat7-uygulama-sunucusunun-kurulumu</id>

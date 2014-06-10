@@ -9,26 +9,21 @@
   <meta name="author" content="Aydın Doyak">
 
   
-  <meta name="description" content="Bu blog yazısı Dokku Rehberi&#8217;nin ikinci kısmı olup, bu yazıda Wordpress&#8217;in Dokku PaaS sistemlerine konuşlandırılmasını anlatacağım. &hellip;">
+  <meta name="description" content="　 Aydın Doyak Wordpress on Dokku : Dokku Rehberi II Bu blog yazısı Dokku Rehberi&#8217;nin ikinci kısmı olup, bu yazıda Wordpress&#8217;in Dokku &hellip;">
   
 
-  <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   
   <link rel="canonical" href="http://aydintd.me">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Aydın Doyak" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'> 
-
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
   <script type="text/javascript">
@@ -47,26 +42,29 @@
 </head>
 
 <body   >
-  <header role="banner"><hgroup>
+  <div id="sidebar_control"></div>
+  <div id="sidebar">
+    <div class="logo">
+      $ echo
+    </div>
+    <div class="content hide">
+      <section role="navigation">
+        <header role="banner"><hgroup>
   <h1><a href="/">Aydın Doyak</a></h1>
   
-    <h2>aydintd@eagle:~$ echo 'Technical, Personal Blog!'</h2>
+    <h2>Teknik, Kişisel Blog</h2>
   
 </hgroup>
 
 </header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
+        
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:aydintd.me" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
-  
+
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Arşiv</a></li>
@@ -74,43 +72,43 @@
   <li><a href="http://fo.aydintd.me">Folyo</a></li>
 </ul>
 
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
+
+      </section>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/">Wordpress on Dokku : Dokku Rehberi II</a></h1>
-    
-    
-      <p class="meta">
         
-
-
-
-
-
-
-
-
+<section>
+  <h2>github</h2>
   
+  <a href="https://github.com/aydintd">@aydintd</a>
+  
+  <ul id="gh_repos">
+  </ul>
+</section>
 
 
-<time datetime="2014-05-30T01:54:00+03:00" pubdate data-updated="true">May 30<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/#disqus_thread">Comments</a>
-        
-      </p>
+      
+    </div>
+  </div>
+  <div id="main">
+    <div class="content">
+      
+<header>
+  <div class="back">　</div>
+  <h1 class="entry-title"><a href="/">Aydın Doyak</a></h1>
+</header>
+<ul class="blog-index">
+  
     
-  </header>
-
-
-  <div class="entry-content"><p>Bu blog yazısı Dokku Rehberi&#8217;nin ikinci kısmı olup, bu yazıda Wordpress&#8217;in Dokku PaaS sistemlerine konuşlandırılmasını anlatacağım.</p>
+    
+      
+      
+    
+    
+  
+  <li class="entry first-entry">
+    <h2 class="entry-title"><a href="/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/">Wordpress on Dokku : Dokku Rehberi II</a></h2>
+    
+      <div class="entry-content"><p>Bu blog yazısı Dokku Rehberi&#8217;nin ikinci kısmı olup, bu yazıda Wordpress&#8217;in Dokku PaaS sistemlerine konuşlandırılmasını anlatacağım.</p>
 
 <p>Yazarken Manowar &ndash; Warriors of the World dinledim, bazı kısımlar sert gelebilir. Like thunder from the sky&hellip;</p>
 
@@ -266,761 +264,149 @@ define('DB_CHARSET', 'utf8');
 
 <p>Gerisi sizin hayal gücünüze kalıyor. Hepsi bu kadar. :&ndash;)</p>
 </div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/">Logical Volume Manager (LVM) Rehberi</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-25T16:38:00+03:00" pubdate data-updated="true">Aug 25<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>LVM yani Logical Volume Manager var olan fiziksel diskleri, insanlık tarihinden bu yana gelen &ldquo;böl, parçala, yönet&rdquo;
-mantığıyla sanallaştırıp yönetmek amaçlı yazılmış çok yararlı bir program. Bir ya da birden fazla olan disklerinizi
-tek bir disk havuzuymuş gibi gösterip, partitions ile karmaşık disk alanı hesaplamalarını sizin yerinize soyutlayıp
-yapıyor.</p>
-
-<p>Bir çok linux dağıtımı artık öntanımlı LVM disk formatı seçeneğiyle gelmekte. Özellikle son sürüm işletim sistemleri
-aksini belirtmediğiniz takdirde bu şekilde sisteminize kuruluyor.</p>
-
-<p>Bu blog yazısında lvm ile volume grup oluşturma, birden fazla olan disklerinizi volume gruplar
-içerisinde toplayıp daha sonrasında toplam disk alanınız üzerinden nasıl disk bölümlemesi yapıldığını anlatacağım.</p>
-
-<h2>Hazırlık</h2>
-
-<p>Ben bir Ubuntu 12.10 sanal makinesi üzerinde 16GB ve 14GB lık iki diski lvm ile sanallaştırıp toplamda 30GB lık tek bir
-sanal disk yaratıp, daha sonra keyfimize göre bu diski sanal olarak bölümleyeceğim.</p>
-
-<p>Aşağıdaki komut ile disklerinizi görüntüleyin.</p>
-
-<p><code>$ sudo fdisk -l</code></p>
-
-<p>Aşağıdaki gibi bölümler göreceksiniz :</p>
-
-<pre><code>`Disk /dev/sdb: 17.2 GB, 17179869184 bytes
-255 heads, 63 sectors/track, 2088 cylinders, total 33554432 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00000000
-
-Disk /dev/sdb doesn't contain a valid partition table
-
-Disk /dev/sdc: 15.0 GB, 15032385536 bytes
-255 heads, 63 sectors/track, 1827 cylinders, total 29360128 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk identifier: 0x00000000
-
-Disk /dev/sdc doesn't contain a valid partition table`
-</code></pre>
-
-<p>Bu çıktıdan anladığımız, işletim sistemimiz disklerimizden fiziksel olarak haberdar, ancak
-hiç bir disk bölümlemesi yapılmadığından dolayı ağlıyor.</p>
-
-<p>Disk bölümlemelerini aşağıdaki gibi yapın :</p>
-
-<p><code>$ sudo fdisk /dev/sdb</code></p>
-
-<p>Açılan konsolda <code>m</code> harfine basarak aşağıdaki gibi yardımcı komutu görüntüleyebilirsiniz :</p>
-
-<pre><code>Command action
-    a   toggle a bootable flag
-    b   edit bsd disklabel
-    c   toggle the dos compatibility flag
-    d   delete a partition
-    l   list known partition types
-    m   print this menu
-    n   add a new partition
-    o   create a new empty DOS partition table
-    p   print the partition table
-    q   quit without saving changes
-    s   create a new empty Sun disklabel
-    t   change a partition's system id
-    u   change display/entry units
-    v   verify the partition table
-    w   write table to disk and exit
-    x   extra functionality (experts only)
-</code></pre>
-
-<p><code>n</code> harfiyle <code>/dev/sdb</code> diskinde bir bölüm oluşturma işine başlayın. Size bu bölümün primary mi logical mı olacağını soracak.
-Öntanımlı primary olarak seçim geliyor. Primary seçtikten sonra oluşturduğumuz disk bölümü için 1-4 arası bir değer girmenizi
-sizden isteyecek. İsteğinize göre seçip disk bölümünün diskin ne kadarını bölüm için ayarlayacağınızı size soracak. Ben bu örnekte
-tüm diski tek bir bölüm olarak oluşturacağım. Daha sonra <code>w</code> harfiyle değişiklikleri yapıp fdisk programından çıkış yapacağım.</p>
-
-<p>Yukarıda anlatmaya çalıştığım süreç aşağıdaki gibi gözükecek :</p>
-
-<pre><code>Command (m for help): n
-Partition type:
-    p   primary (0 primary, 0 extended, 4 free)
-    e   extended
-    Select (default p): 
-    Using default response p
-    Partition number (1-4, default 1): 
-    Using default value 1
-    First sector (2048-33554431, default 2048): 
-    Using default value 2048
-    last sector, +sectors or +size{K,M,G} (2048-33554431, default 33554431): 
-    Using default value 33554431
-
-    Command (m for help): w
-    The partition table has been altered!
-
-    Calling ioctl() to re-read partition table.
-    Syncing disks.
-
-vagrant@precise32:~$
-</code></pre>
-
-<p>Aynı işlemi <code>/dev/sdc</code> için de yapın.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/">RedHat Scientific Linux CentOS Sanal Makine Klonlarının Eth0 ağ Arayüzü Hatasının Düzeltilmesi</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
+  </li>
   
 
 
-<time datetime="2013-06-25T02:25:00+03:00" pubdate data-updated="true">Jun 25<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/#disqus_thread">Comments</a>
-        
-      </p>
+  
     
-  </header>
+    
+    
+  
+  <li class="entry ">
+    <h2 class="entry-title"><a href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/">Logical Volume Manager (LVM) Rehberi</a></h2>
+    
+  </li>
+  
 
 
-  <div class="entry-content"><p>Scientific Linux 6 sürümünü VirtualBox&#8217;da &ldquo;bare&rdquo; olarak klonlayıp, ağ konfigürasyonunu
-yaparken ilginç bir hatayla karşılaştım. İnternette bir çok yerde SL, CentOS ve
-türev sürümlerinin VirtualBox klonlarının internet erişimini sağlayamadığından yakınan
-baya bir kullanıcı girdisi okudum.<br/>
-Bir kaç okuma yaptıktan sonra, şöyle bir şey keşfettim :</p>
+  
+    
+    
+    
+  
+  <li class="entry ">
+    <h2 class="entry-title"><a href="/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/">RedHat Scientific Linux CentOS Sanal Makine Klonlarının Eth0 ağ Arayüzü Hatasının Düzeltilmesi</a></h2>
+    
+  </li>
+  
 
-<p>VirtualBox, VMWare gibi sanallaştırma araçları, ilgili klonların her birine
-kendisi bir MAC adresi atıyor. Ancak SL, CentOS gibi sürümlerin kernel&#8217;leri kendilerine atanan
-bu yeni konfigürasyonu ilk başta update edemiyorlar. Eski kernel&#8217;da kayıtlı MAC adresiyle
-VBox&#8217;un klonlara atadığı MAC adresi de örtüşmediğinden sanal makineniz sadece loopback
-arayüzünü başlatabiliyor ve eth0 ölü halde kalıyor. Dolayısıyla klonlar internete
-çıkamıyorlar.</p>
 
-<h2>Peki Çözüm Nasıl Olmalı?</h2>
+  
+    
+    
+    
+  
+  <li class="entry ">
+    <h2 class="entry-title"><a href="/blog/2013/05/21/yeniden-merhaba/">Yeniden Merhaba!</a></h2>
+    
+  </li>
+  
 
-<ul>
-<li>Kernel&#8217;ın başta oluşturduğu &ldquo;ağ arayüzü kuralları&rdquo; dosyasını silelim. Böylece
-klon yeniden başlatıldığında kernel kendine yeni bir kural dosyası üretebilsin
-ve böylece VM tarafından atanan yeni MAC adresini kendine kaydedebilsin :</li>
+
+  
+    
+    
+    
+  
+  <li class="entry ">
+    <h2 class="entry-title"><a href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/">Ubuntuda Java EE Uygulamaları Için Apache Tomcat7 Uygulama Sunucusunun Kurulumu</a></h2>
+    
+  </li>
+  
+
+
+  
+    
+    
+    
+  
+  <li class="entry ">
+    <h2 class="entry-title"><a href="/blog/2013/02/22/vagrant-2/">Vagrant 2</a></h2>
+    
+  </li>
+  
+
+
+  
+    
+    
+    
+  
+  <li class="entry ">
+    <h2 class="entry-title"><a href="/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/">Nginx-mysql-php5 Cgi-supervisor Kurulumu</a></h2>
+    
+  </li>
+  
+
+
+  
+    
+    
+    
+  
+  <li class="entry ">
+    <h2 class="entry-title"><a href="/blog/2013/01/06/vagrant/">Vagrant</a></h2>
+    
+  </li>
+  
+
+
+  
+    
+    
+    
+  
+  <li class="entry ">
+    <h2 class="entry-title"><a href="/blog/2012/10/14/ubuntuda-makine-ad%C4%B1-de%C4%9Fi%C5%9Ftirme/">Ubuntuda Makine Adı Değiştirme</a></h2>
+    
+  </li>
+  
+
+
+  
+    
+    
+    
+  
+  <li class="entry ">
+    <h2 class="entry-title"><a href="/blog/2012/09/10/paket-kurulumlari/">Betik Ile Paket/Gem Kurulumu</a></h2>
+    
+  </li>
+  
+
+
+  
 </ul>
-
-
-<p><code>$ sudo rm -rf /etc/udev/rules.d/70-persistent-net.rules</code></p>
-
-<p><code>$ sudo reboot</code></p>
-
-<ul>
-<li>Makine yeniden başladıktan sonra sıra geldi ağ yapılandırmasına.
-SL 6.4 de default olarak gelen text editörü <code>vi</code> olduğundan dosya
-düzenlemelerini vi ile göstereceğim :</li>
-</ul>
-
-
-<p><code>$ sudo vi /etc/sysconfig/network-scripts/ifcfg-eth0</code></p>
-
-<ul>
-<li>Dosyada aşağıdaki değişiklikleri uygulayalım :</li>
-</ul>
-
-
-<p><code>MACADDR</code> girdisini kaldıralım.</p>
-
-<p><code>UUID</code> girdisini kaldıralım.</p>
-
-<p>ve dosyayı kaydedip çıkalım.</p>
-
-<ul>
-<li>Ağ konfigürasyonumuzu tamamladık, servisi yeniden başlatmalıyız ki girdiğimiz
-ayarlar klon tarafından görülebilsin.</li>
-</ul>
-
-
-<p><code>$ service network restart</code></p>
-
-<ul>
-<li>ve İnternete çıkış yaptık mı? Ping&#8217;leyerek kontrol edelim :</li>
-</ul>
-
-
-<p><code>$ ping 8.8.8.8</code></p>
-
-<p>Ta-daa! Klonunuz internete çıkmaya hazır. Tek yapmanız gereken ihtiyacınız olan servisi
-&ldquo;yum&#8221;lamak.</p>
-
-<p><code>Önemli Not:</code> VirtualBox&#8217;da Ağ Seçeneği NAT olarak ayarlı olmalı.</p>
-
-<h2>Kaynakça</h2>
-
-<p><code>http://blog.roozbehk.com/post/35156862882/redhat-add-network-eth</code></p>
-
-<p><code>http://www.envision-systems.com.au/blog/2012/09/21/fix-eth0-network-interface-when-cloning-redhat-centos-or-scientific-virtual-machines-using-oracle-virtualbox-or-vmware/</code></p>
+<div class="pagination">
+  
+    <a class="prev" href="/blog/page/2/">&larr; Older</a>
+  
+  
 </div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/21/yeniden-merhaba/">Yeniden Merhaba!</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-21T22:02:00+03:00" pubdate data-updated="true">May 21<span>st</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/21/yeniden-merhaba/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Octopress ile sizlere tekrar merhaba demeyi uzun zamandır planlıyordum.<br/>
-Bundan böyle bu şablon ve yapı altında çalışmalarımı sizinle paylaşacağım.
-Bir çok güzel özelliği, pluginleri vb. ile ne zamandır beni cezbediyordu zaten,
-ben de gerekli zamanı bulup siteyi göç ettirdim.</p>
-
-<p>Yazın sıcak ama yakmayan, kışın da soğuk ama yakmayan yerleri seviyoruz.<br/>
-Erik mevsimi de açıldığına göre&hellip;</p>
-
-<hr />
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/">Ubuntuda Java EE Uygulamaları Için Apache Tomcat7 Uygulama Sunucusunun Kurulumu</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-26T23:34:00+02:00" pubdate data-updated="true">Feb 26<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>  Java2EE web uygulamaları için gereken açık kaynak apache-tomcat7 uygulama<br/>
-  sunucusunun kurulumunu adım adım takip edelim :</p>
-
-<h3>Başlarken</h3>
-
-<p>  Kurulum Linux Ubuntu 12.10 32bit işletim sistemi üzerinde Apache Tomcat 7.0.30<br/>
-  sürümü olarak sizi yönlendirecektir.</p>
-
-<ul>
-<li> Not : Tomcat Uygulama sunucusunu kurmadan, makinenizde Java nın kurulu<br/>
-olduğundan emin olun.</li>
-</ul>
-
-
-<h3>Kurulum</h3>
-
-<p>  Aşağıdaki komutları çalıştırın :</p>
-
-<p>  <code>$ sudo apt-get update &amp;&amp; sudo apt-get install tomcat7</code></p>
-
-<p>  Böylece tomcat7 uygulama sunucusunu makinemize kurmuş olacağız.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/22/vagrant-2/">Vagrant 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-22T02:02:00+02:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/22/vagrant-2/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>  Vagrant Temel Kutu Hazırlama konusunda hazırladığım doküman sayfasına
-  aşağıdaki linkten ulaşabilirsiniz.</p>
-
-<p>  <a href="http://aydintd.me/fo/vagrant-2/#slide1">Vagrant 2</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/">Nginx-mysql-php5 Cgi-supervisor Kurulumu</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-14T01:44:00+02:00" pubdate data-updated="true">Jan 14<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>  php denemeleri yapabileceğimiz nginx web sunucusu için <br/>
-  gereken ortamı sırasıyla kuralım :</p>
-
-<h3>Kurulum İçerikleri</h3>
-
-<ul>
-<li> mysql Kurulumu</li>
-<li> nginx Kurulumu ve Konfigürasyonu</li>
-<li> php5-cgi Kurulumu</li>
-<li> supervisor Kurulumu</li>
-</ul>
-
-
-<h4>Mysql Kurulumu</h4>
-
-<p>  Paketi aşağıdaki şekilde kuruyoruz :</p>
-
-<p>  <code>$ sudo apt-get install mysql-server mysql-client</code></p>
-
-<p>  Kurulumda bizden mysql root password istiyor. Uygun bir<br/>
-  password girip kurulumun tamamlanmasını bekliyoruz.</p>
-
-<p>  Kurulum bittikten sonra mysql doğru çalışıyor mu diye<br/>
-  kontrol etmemiz gerek. Mysql prosesi var mı kontrol edelim :</p>
-
-<p>  <code>$ sudo ps ax | grep mysqld</code></p>
-
-<pre><code>  6234 ?            Ssl  O:OO /usr/sbin/mysqld
-  6546 pts/0        S+   0:00  grep --color=auto mysqld
-</code></pre>
-
-<p>  Yukarıdakine benzer bir çıktı veriyorsa mysql doğru kurulmuş demektir.<br/>
-  Ancak dilerseniz mysql e bir giriş yapalım ve emin olalım.</p>
-
-<p>  <code>$ mysql -u root -p</code></p>
-
-<p>  Kurulum yaparken ki root şifrenizi girip mysql konsolunuzu görüntüleyin.<br/>
-  <code>exit</code> diyerek çıkış yapalım.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/01/14/nginx-mysql-php5-cgi-supervisor-kurulumu/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/01/06/vagrant/">Vagrant</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-06T22:54:00+02:00" pubdate data-updated="true">Jan 6<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/01/06/vagrant/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>  Vagrantla ilgili hazırladığım doküman folyosuna aşağıdaki linkten ulaşabilirsiniz :</p>
-
-<p>  <a href="http://aydintd.github.com/fo/vagrant/#slide1">Vagrant</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/14/ubuntuda-makine-ad%C4%B1-de%C4%9Fi%C5%9Ftirme/">Ubuntuda Makine Adı Değiştirme</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-14T20:12:00+03:00" pubdate data-updated="true">Oct 14<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/10/14/ubuntuda-makine-ad%C4%B1-de%C4%9Fi%C5%9Ftirme/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li><p>Ubuntu 12.04 işletim sistemi sürümünde<br/>
-makine adı kolayca değiştirilebiliyor.<br/>
-Bu işlemi sadece iki adımda yapabilirsiniz :</p></li>
-<li><p><code>$ gksudo gedit /etc/hostname</code> içine girin<br/>
-ve açılan dosyaya olmasını istediğiniz makine ismini<br/>
-yazın.</p></li>
-<li><p>Daha sonra; <code>$ gksudo gedit /etc/hosts</code> komutunu<br/>
-çalıştırdığınızda aşağıdaki gibi bir dosya görünümü<br/>
-görüyor olmanız lazım :</p>
-
-<pre><code>  127.0.0.1      localhost  
-  127.0.1.1      peekaboo
-
-  # The following lines are desirable for IPv6 capable hosts
-  ::1 ip6-localhost ip6-loopback
-  fe00::0 ip6-localnet
-  ff00::0 ip6-mcastprefix
-  ff02::1 ip6-allnodes
-  ff02::2 ip6-allrouters
-</code></pre>
-
-<p><code>127.0.1.1      peekaboo</code> satırında peekaboo yazan kısmı bir<br/>
-önceki adımda olmasını istediğiniz makine ismiyle değiştirin.</p></li>
-<li><p>Son olarak <code>$ sudo reboot</code> diyerek sisteminizi yeniden<br/>
-başlatın. Başlangıç sayfasında ve uçbiriminizde makine adınızın<br/>
-değiştiğini göreceksiniz.</p></li>
-<li><p>Dip not : Örnekteki peekaboo kendi kullandığım makine ismidir.</p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/09/10/paket-kurulumlari/">Betik Ile Paket/Gem Kurulumu</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-09-10T23:49:00+03:00" pubdate data-updated="true">Sep 10<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/09/10/paket-kurulumlari/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Paket Kurulumu</h2>
-
-<ul>
-<li><p><code>sudo ./lab-paket-gem-yükle gem_listesi paket_listesi</code> komutunu çalıştır</p>
-
-<pre><code>  #!/bin/bash
-  for gem in `cat $1`; do
-  gemler="$gemler $gem"
-  done
-
-  gem install $gemler
-
-  for paket in `cat $2`; do
-  paketler="$paketlerler $paket"
-  done
-
-  gem install $paketler
-</code></pre>
-
-<p> UYARI: Bu listeler her bir gem ve paket adını alt alta olacak şekilde eklemelidir.<br/>
- Örnek dosya: src/gemler.txt ve src/paketler.txt</p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/05/30/wordpress-on-dokku-dokku-rehberi-ii/">Wordpress on Dokku : Dokku Rehberi II</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/25/logical-volume-manager-lvm-rehberi/">Logical Volume Manager (LVM) Rehberi</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/25/redhat-scientific-linux-centos-sanal-makine-klonlanirken-eth0-ag-arayuzu-hatasinin-duzeltilmesi/">RedHat Scientific Linux CentOS Sanal Makine Klonlarının Eth0 ağ Arayüzü Hatasının Düzeltilmesi</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/05/21/yeniden-merhaba/">Yeniden Merhaba!</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/26/ubuntuda-java-ee-uygulamalar%C4%B1-i%C3%A7in-apache-tomcat7-uygulama-sunucusunun-kurulumu/">Ubuntuda Java EE Uygulamaları Için Apache Tomcat7 Uygulama Sunucusunun Kurulumu</a>
-      </li>
-    
-  </ul>
-</section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
-  
-  <a href="https://github.com/aydintd">@aydintd</a> on GitHub
-  
-  <script type="text/javascript">
-    $(document).ready(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'aydintd',
-            count: 0,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-
-<section class="googleplus googleplus-hidden">
-  <h1>
-    <a href="https://plus.google.com/aydintd?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
-</section>
-
-
-
-  
-</aside>
 
     </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - Aydın Doyak -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
+    <footer role="contentinfo"><div class="content">
+  <p>
+    Copyright &copy; 2014 Aydın Doyak
+  </p>
+</div>
 
 </footer>
-  
+    
 
 <script type="text/javascript">
-      var disqus_shortname = 'aydintd';
-      
-        
-        var disqus_script = 'count.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
+  disqus_shortname = 'aydintd';
+  
+  (function () {
+    var disqus_script = 'count.js';
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
 </script>
 
 
@@ -1051,7 +437,7 @@ değiştiğini göreceksiniz.</p></li>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
@@ -1059,6 +445,50 @@ değiştiğini göreceksiniz.</p></li>
 
 
 
+
+  </div>
+  <script src="/javascripts/modernizr-2.0.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+<script src="/javascripts/libs/respond.js" type="text/javascript"></script>
+<script src="/javascripts/octopress.js" type="text/javascript"></script>
+
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+    if (!window.jXHR){
+      var jxhr = document.createElement('script');
+      jxhr.type = 'text/javascript';
+      jxhr.src = '/javascripts/libs/jXHR.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jxhr, s);
+    }
+
+    github.showRepos({
+      user: 'aydintd',
+      count: 0,
+      skip_forks: true,
+      target: '#gh_repos'
+    });
+  });
+  </script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var userAgent = navigator.userAgent.toLowerCase();
+  var isiPhone = (userAgent.indexOf('iphone') != -1 || userAgent.indexOf('ipod') != -1) ? true : false;
+  var isAndroid = (userAgent.indexOf('android') != -1) ? true : false;
+  clickEvent = (isiPhone || isAndroid) ? 'touchstart' : 'click';
+  $('#sidebar').on(clickEvent, function() {
+    $(this).toggleClass('open');
+  });
+  $('.articlemeta').on(clickEvent, function() {
+    toggleDisqus();
+    $(this).toggleClass('open');
+  });
+});
+</script>
 
 </body>
 </html>
